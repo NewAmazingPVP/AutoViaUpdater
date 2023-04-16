@@ -25,7 +25,7 @@ public final class ViaRewindLegacy {
         }
         String outputFilePath = "plugins/viarewind-legacy-support.jar";
 
-        Plugin viaRewindLegacyPlugin = Bukkit.getPluginManager().getPlugin("ViaRewindLegacySupport");
+        Plugin viaRewindLegacyPlugin = Bukkit.getPluginManager().getPlugin("ViaRewind-Legacy-Support");
         if (viaRewindLegacyPlugin != null) {
             String currentVersion = viaRewindLegacyPlugin.getDescription().getVersion();
             try {
