@@ -79,7 +79,6 @@ public final class ViaVersion {
             String currentVersion = viaVersionDevPlugin.getDescription().getVersion();
             try {
                 if (currentVersion.equals(getLatestViaVersionDev())) {
-                    getLogger().info("Plugin location: " + viaVersionDevPlugin.getClass().getProtectionDomain().getCodeSource().getLocation());
                     return;
                 }
             } catch (IOException e) {
