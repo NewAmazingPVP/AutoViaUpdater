@@ -14,12 +14,12 @@ import java.net.URL;
 
 import static org.bukkit.Bukkit.getLogger;
 
-public final class ViaRewindLegacy {
+public final class ViaRewindLegacySupport {
 
-    public void updateViaRewindLegacy() throws IOException {
+    public void updateViaRewindLegacySupport() throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind%20Legacy%20Support/lastSuccessfulBuild/artifact/target/viarewind-legacy-support-" + getLatestViaRewindLegacy() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind%20Legacy%20Support/lastSuccessfulBuild/artifact/target/viarewind-legacy-support-" + getLatestViaRewindLegacySupport() + ".jar";
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -29,7 +29,7 @@ public final class ViaRewindLegacy {
         if (viaRewindLegacyPlugin != null) {
             String currentVersion = viaRewindLegacyPlugin.getDescription().getVersion();
             try {
-                if (currentVersion.equals(getLatestViaRewindLegacy())) {
+                if (currentVersion.equals(getLatestViaRewindLegacySupport())) {
                     return;
                 }
             } catch (IOException e) {
@@ -54,7 +54,7 @@ public final class ViaRewindLegacy {
         getLogger().info(ChatColor.BLUE + "Newer ViaRewindLegacy downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
     }
 
-    public String getLatestViaRewindLegacy() throws IOException {
+    public String getLatestViaRewindLegacySupport() throws IOException {
         String url = "https://ci.viaversion.com/view/ViaRewind/job/ViaRewind Legacy Support/lastSuccessfulBuild/";
         Document doc = Jsoup.connect(url).get();
         Element artifactLink = doc.selectFirst("a[href$=.jar]");
