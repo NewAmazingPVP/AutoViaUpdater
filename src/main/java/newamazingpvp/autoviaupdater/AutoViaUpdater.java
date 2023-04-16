@@ -20,6 +20,10 @@ public final class AutoViaUpdater extends JavaPlugin {
     public boolean isViaVersionDev;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaRewindEnabled;
+    public boolean isViaRewindDev;
+    public boolean isViaRewindLegacyEnabled;
+
     @Override
     public void onEnable() {
         m_viaVersion = new ViaVersion();
@@ -55,9 +59,9 @@ public final class AutoViaUpdater extends JavaPlugin {
         isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev");
-        boolean isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
-        boolean isViaRewindDev = getConfig().getBoolean("ViaRewind.dev");
-        boolean isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
+        isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
+        isViaRewindDev = getConfig().getBoolean("ViaRewind.dev");
+        isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
 
         if (!config.contains("ViaVersion.enabled")) {
             config.set("ViaVersion.enabled", true);
@@ -109,14 +113,14 @@ public final class AutoViaUpdater extends JavaPlugin {
                     } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
                         m_viaBackwards.updateViaBackwardsDev();
                     }
-                    /*if (isViaRewindEnabled && !isViaRewindDev) {
+                    if (isViaRewindEnabled && !isViaRewindDev) {
                         m_viaRewind.updateViaRewind();
                     } else if (isViaRewindEnabled && isViaRewindDev) {
                         m_viaRewind.updateViaRewindDev();
                     }
                     if (isViaRewindLegacyEnabled) {
                         m_viaRewindLegacy.updateViaRewindLegacy();
-                    }*/
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (URISyntaxException e) {
