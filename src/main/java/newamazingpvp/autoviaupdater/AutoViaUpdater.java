@@ -15,7 +15,7 @@ public final class AutoViaUpdater extends JavaPlugin {
     private ViaVersion m_viaVersion;
     private ViaBackwards m_viaBackwards;
     private ViaRewind m_viaRewind;
-    private ViaRewindLegacy m_viaRewindLegacy;
+    private ViaRewindLegacySupport m_viaRewindLegacySupport;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
     public boolean isViaBackwardsEnabled;
@@ -29,7 +29,7 @@ public final class AutoViaUpdater extends JavaPlugin {
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();
-        m_viaRewindLegacy = new ViaRewindLegacy();
+        m_viaRewindLegacySupport = new ViaRewindLegacySupport();
         config = getConfig();
 
         if (!getDataFolder().exists()) {
@@ -121,7 +121,7 @@ public final class AutoViaUpdater extends JavaPlugin {
                         m_viaRewind.updateViaRewindDev();
                     }
                     if (isViaRewindLegacyEnabled) {
-                        m_viaRewindLegacy.updateViaRewindLegacy();
+                        m_viaRewindLegacySupport.updateViaRewindLegacySupport();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
