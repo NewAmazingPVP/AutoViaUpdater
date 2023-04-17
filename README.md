@@ -1,5 +1,5 @@
 # AutoViaUpdater
-AutoViaUpdater is a plugin for Spigot/BungeeCord that automates the updating of Vias such as ViaVersion, ViaRewind, ViaBackwards, and ViaRewind-Legacy.
+AutoViaUpdater is a plugin for Spigot/Bukkit that automates the updating of Vias such as ViaVersion, ViaRewind, ViaBackwards, and ViaRewind-Legacy.
 
 # Features
 - Compatible with Minecraft versions 1.8 and higher, including the latest versions.
