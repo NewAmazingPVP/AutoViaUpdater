@@ -41,8 +41,7 @@ public final class AutoViaUpdater extends JavaPlugin {
                 file.createNewFile();
 
                 FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-
-                configuration.options().header("Enable/Disable plugins\nEnable dev for latest developer versions and disable dev for stable released versions");
+                
                 configuration.set("ViaVersion.enabled", true);
                 configuration.set("ViaVersion.dev", false);
                 configuration.set("ViaBackwards.enabled", true);
