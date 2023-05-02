@@ -1,5 +1,9 @@
-package newamazingpvp.autoviaupdater;
+package spigot;
 
+import common.ViaBackwards;
+import common.ViaRewind;
+import common.ViaRewindLegacySupport;
+import common.ViaVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,7 +45,7 @@ public final class AutoViaUpdater extends JavaPlugin {
                 file.createNewFile();
 
                 FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                
+
                 configuration.set("ViaVersion.enabled", true);
                 configuration.set("ViaVersion.dev", false);
                 configuration.set("ViaBackwards.enabled", true);
