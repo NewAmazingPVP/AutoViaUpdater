@@ -1,0 +1,26 @@
+# AutoViaUpdater config
+ViaVersion:
+  # Enable or disable ViaVersion updates
+  enabled: true
+  # Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+  dev: false
+
+ViaBackwards:
+  # Enable or disable ViaBackwards updates
+  enabled: true
+  # Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+  dev: false
+
+ViaRewind:
+  # Enable or disable ViaRewind updates
+  enabled: true
+  # Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+  dev: false
+
+ViaRewind-Legacy:
+  # Enable or disable ViaRewind-Legacy updates
+  enabled: true
+
+# Check-Interval setting
+# The interval (in minutes) to check for updates
+Check-Interval: 60
