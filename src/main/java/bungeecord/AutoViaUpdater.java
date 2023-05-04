@@ -5,19 +5,18 @@ import common.ViaRewind;
 import common.ViaRewindLegacySupport;
 import common.ViaVersion;
 import net.md_5.bungee.api.plugin.Plugin;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 public final class AutoViaUpdater extends Plugin {
 
-    private FileConfiguration config;
+    private Configuration config;
     private ViaVersion m_viaVersion;
     private ViaBackwards m_viaBackwards;
     private ViaRewind m_viaRewind;
@@ -36,74 +35,20 @@ public final class AutoViaUpdater extends Plugin {
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();
         m_viaRewindLegacySupport = new ViaRewindLegacySupport();
-        config = getConfig();
-
-        if (!getDataFolder().exists()) {
-            getDataFolder().mkdir();
-        }
-        File file = new File(getDataFolder(), "config.yml");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-
-                FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-
-                configuration.set("ViaVersion.enabled", true);
-                configuration.set("ViaVersion.dev", false);
-                configuration.set("ViaBackwards.enabled", true);
-                configuration.set("ViaBackwards.dev", false);
-                configuration.set("ViaRewind.enabled", true);
-                configuration.set("ViaRewind.dev", false);
-                configuration.set("Check-Interval", 30);
-
-                configuration.save(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
-        isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
-        isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
-        isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev");
-        isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
-        isViaRewindDev = getConfig().getBoolean("ViaRewind.dev");
-        isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
-
-        if (!config.contains("ViaVersion.enabled")) {
-            config.set("ViaVersion.enabled", true);
-        }
-        if (!config.contains("ViaVersion.dev")) {
-            config.set("ViaVersion.dev", false);
-        }
-        if (!config.contains("ViaBackwards.enabled")) {
-            config.set("ViaBackwards.enabled", true);
-        }
-        if (!config.contains("ViaBackwards.dev")) {
-            config.set("ViaBackwards.dev", false);
-        }
-        if (!config.contains("ViaRewind.enabled")) {
-            config.set("ViaRewind.enabled", true);
-        }
-        if (!config.contains("ViaRewind.dev")) {
-            config.set("ViaRewind.dev", false);
-        }
-        if (!config.contains("ViaRewind-Legacy.enabled")) {
-            config.set("ViaRewind-Legacy.enabled", true);
-        }
-        if (!config.contains("Check-Interval")) {
-            config.set("Check-Interval", 30);
-        }
-        try {
-            config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        saveDefaultConfig();
+        loadConfiguration();
+        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
+        isViaVersionDev = config.getBoolean("ViaVersion.dev");
+        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
+        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
+        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
+        isViaRewindDev = config.getBoolean("ViaRewind.dev");
+        isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
 
         updateChecker();
     }
 
     public void updateChecker() {
-        config = getConfig();
         long interval = config.getInt("Check-Interval");
         getProxy().getScheduler().schedule(this, new Runnable() {
             @Override
@@ -133,14 +78,25 @@ public final class AutoViaUpdater extends Plugin {
         }, 0L, 60L, TimeUnit.SECONDS);
     }
 
-    public FileConfiguration getConfig() {
-        try {
-            File configFile = new File(getDataFolder(), "config.yml");
-            FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
-            return configuration;
-        } catch (Exception e) {
-            e.printStackTrace();
+    private void saveDefaultConfig() {
+        File file = new File(getDataFolder(), "config.yml");
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+            try (InputStream in = getClass().getResourceAsStream("/config.yml")) {
+                Files.copy(in, file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return null;
     }
+
+    private void loadConfiguration() {
+        File file = new File(getDataFolder(), "config.yml");
+        try {
+            config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
