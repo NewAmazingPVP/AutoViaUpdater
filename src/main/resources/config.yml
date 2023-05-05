@@ -18,7 +18,7 @@ ViaRewind:
   dev: false
 
 ViaRewind-Legacy:
-  # Enable or disable ViaRewind-Legacy updates
+  # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord
   enabled: true
 
 # Check-Interval setting

@@ -55,7 +55,11 @@ public final class ViaVersion {
             }
         }
 
-        getLogger().info("New version found. Downloading latest version of ViaVersion...");
+        if(Platform == "spigot") {
+            getLogger().info("Downloading latest version of ViaVersion...");
+        } else {
+            ProxyServer.getInstance().getLogger().info("Downloading latest version of ViaVersion...");
+        }
 
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
@@ -69,7 +73,11 @@ public final class ViaVersion {
             return;
         }
 
-        getLogger().info(ChatColor.BLUE + "Newer ViaVersion downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+        if(Platform == "spigot") {
+            getLogger().info(ChatColor.BLUE + "Newer ViaVersion downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else {
+            ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE+ "Newer ViaVersion downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        }
     }
 
     public String getLatestViaVersion() throws IOException {
@@ -137,7 +145,7 @@ public final class ViaVersion {
         if(Platform == "spigot") {
             getLogger().info(ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
         } else {
-            ProxyServer.getInstance().getLogger().info(ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+            ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
         }
     }
     public String getLatestViaVersionDev() throws IOException {
