@@ -50,6 +50,7 @@ public final class AutoViaUpdater extends Plugin {
 
     public void updateChecker() {
         long interval = config.getInt("Check-Interval");
+        long updateInterval = interval*60;
         getProxy().getScheduler().schedule(this, new Runnable() {
             @Override
             public void run() {
@@ -75,7 +76,7 @@ public final class AutoViaUpdater extends Plugin {
                     throw new RuntimeException(e);
                 }
             }
-        }, 0L, 60L, TimeUnit.SECONDS);
+        }, 0L, updateInterval, TimeUnit.SECONDS);
     }
 
     private void saveDefaultConfig() {

@@ -1,5 +1,6 @@
 package common;
 
+import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
@@ -17,7 +18,7 @@ import static org.bukkit.Bukkit.getLogger;
 
 public final class ViaRewind {
 
-    public void updateViaRewind() throws IOException {
+    public void updateViaRewind(String platform) throws IOException {
         String latestVersionUrl;
         try {
             latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/artifact/all/target/ViaRewind-" + getLatestViaRewind() + ".jar";
@@ -26,34 +27,65 @@ public final class ViaRewind {
         }
         String outputFilePath = "plugins/ViaRewind.jar";
 
-        Plugin viaRewindPlugin = Bukkit.getPluginManager().getPlugin("ViaRewind");
-        if (viaRewindPlugin != null) {
-            String currentVersion = viaRewindPlugin.getDescription().getVersion();
-            try {
-                if (currentVersion.equals(getLatestViaRewind())) {
-                    return;
+        if (platform.equals("spigot")) {
+            Plugin viaRewindPlugin = Bukkit.getPluginManager().getPlugin("ViaRewind");
+            if (viaRewindPlugin != null) {
+                String currentVersion = viaRewindPlugin.getDescription().getVersion();
+                try {
+                    if (currentVersion.equals(getLatestViaRewind())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            getLogger().info("New version found. Downloading latest version of ViaRewind...");
+
+            try (InputStream in = new URL(latestVersionUrl).openStream();
+                 FileOutputStream out = new FileOutputStream(outputFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                getLogger().severe(ChatColor.RED + "Failed to download ViaRewind: " + e.getMessage());
+                return;
             }
-        }
 
-        getLogger().info("New version found. Downloading latest version of ViaRewind...");
-
-        try (InputStream in = new URL(latestVersionUrl).openStream();
-             FileOutputStream out = new FileOutputStream(outputFilePath)) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+            getLogger().info(ChatColor.BLUE + "Newer ViaRewind downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else {
+            net.md_5.bungee.api.plugin.Plugin viaRewindPlugin = ProxyServer.getInstance().getPluginManager().getPlugin("ViaRewind");
+            if (viaRewindPlugin != null) {
+                String currentVersion = viaRewindPlugin.getDescription().getVersion();
+                try {
+                    if (currentVersion.equals(getLatestViaRewind())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (IOException e) {
-            getLogger().severe(ChatColor.RED + "Failed to download ViaRewind: " + e.getMessage());
-            return;
-        }
 
-        getLogger().info(ChatColor.BLUE + "Newer ViaRewind downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+            ProxyServer.getInstance().getLogger().info("New version found. Downloading latest version of ViaRewind...");
+
+            try (InputStream in = new URL(latestVersionUrl).openStream();
+                 FileOutputStream out = new FileOutputStream(outputFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                ProxyServer.getInstance().getLogger().severe(net.md_5.bungee.api.ChatColor.RED + "Failed to download ViaRewind: " + e.getMessage());
+                return;
+            }
+
+            ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaRewind downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        }
     }
+
 
     public String getLatestViaRewind() throws IOException {
         String url = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/";
@@ -64,42 +96,72 @@ public final class ViaRewind {
         return href.substring(href.indexOf("ViaRewind-") + "ViaRewind-".length(), href.lastIndexOf(".jar"));
     }
 
-    public void updateViaRewindDev() throws IOException, URISyntaxException {
+    public void updateViaRewindDev(String platform) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/ViaRewind-" + getLatestViaRewindDev() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/ViaRewind-" + getLatestViaRewind() + ".jar";
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         String outputFilePath = "plugins/ViaRewind.jar";
 
-        Plugin viaRewindDevPlugin = Bukkit.getPluginManager().getPlugin("ViaRewind");
-        if (viaRewindDevPlugin != null) {
-            String currentVersion = viaRewindDevPlugin.getDescription().getVersion();
-            try {
-                if (currentVersion.equals(getLatestViaRewindDev())) {
-                    return;
+        if (platform.equals("spigot")) {
+            Plugin viaRewindPlugin = Bukkit.getPluginManager().getPlugin("ViaRewind");
+            if (viaRewindPlugin != null) {
+                String currentVersion = viaRewindPlugin.getDescription().getVersion();
+                try {
+                    if (currentVersion.equals(getLatestViaRewind())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            getLogger().info("New version found. Downloading latest version of ViaRewind-Dev...");
+
+            try (InputStream in = new URL(latestVersionUrl).openStream();
+                 FileOutputStream out = new FileOutputStream(outputFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                getLogger().severe(ChatColor.RED + "Failed to download ViaRewind-Dev: " + e.getMessage());
+                return;
             }
-        }
 
-        getLogger().info("New version found. Downloading latest version of ViaRewind-Dev...");
-
-        try (InputStream in = new URL(latestVersionUrl).openStream();
-             FileOutputStream out = new FileOutputStream(outputFilePath)) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+            getLogger().info(ChatColor.BLUE + "Newer ViaRewind-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else {
+            net.md_5.bungee.api.plugin.Plugin viaRewindPlugin = ProxyServer.getInstance().getPluginManager().getPlugin("ViaRewind");
+            if (viaRewindPlugin != null) {
+                String currentVersion = viaRewindPlugin.getDescription().getVersion();
+                try {
+                    if (currentVersion.equals(getLatestViaRewind())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (IOException e) {
-            getLogger().severe(ChatColor.RED + "Failed to download ViaRewind-Dev: " + e.getMessage());
-            return;
-        }
 
-        getLogger().info(ChatColor.BLUE + "Newer ViaRewind-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
+            ProxyServer.getInstance().getLogger().info("New version found. Downloading latest version of ViaRewind-Dev...");
+
+            try (InputStream in = new URL(latestVersionUrl).openStream();
+                 FileOutputStream out = new FileOutputStream(outputFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                ProxyServer.getInstance().getLogger().severe(net.md_5.bungee.api.ChatColor.RED + "Failed to download ViaRewind-Dev: " + e.getMessage());
+                return;
+            }
+
+            ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaRewind-Dev downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        }
     }
     public String getLatestViaRewindDev() throws IOException {
         String url = "https://ci.viaversion.com/job/ViaRewind-Dev/lastSuccessfulBuild/";
