@@ -48,7 +48,7 @@ public final class AutoViaUpdater extends JavaPlugin {
     public void updateChecker() {
         config = getConfig();
         long interval = config.getInt("Check-Interval");
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             @Override
             public void run() {
                 try {
@@ -84,13 +84,13 @@ public final class AutoViaUpdater extends JavaPlugin {
 
         config = getConfig();
         config.addDefault("ViaVersion.enabled", true);
-        config.set("ViaVersion.dev", false);
-        config.set("ViaBackwards.enabled", true);
-        config.set("ViaBackwards.dev", false);
-        config.set("ViaRewind.enabled", true);
-        config.set("ViaRewind.dev", false);
-        config.set("ViaRewind-Legacy.enabled", true);
-        config.set("Check-Interval", 60);
+        config.addDefault("ViaVersion.dev", false);
+        config.addDefault("ViaBackwards.enabled", true);
+        config.addDefault("ViaBackwards.dev", false);
+        config.addDefault("ViaRewind.enabled", true);
+        config.addDefault("ViaRewind.dev", false);
+        config.addDefault("ViaRewind-Legacy.enabled", true);
+        config.addDefault("Check-Interval", 60);
 
         config.options().copyDefaults(true);
         saveConfig();

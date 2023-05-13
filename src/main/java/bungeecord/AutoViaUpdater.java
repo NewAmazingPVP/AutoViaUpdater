@@ -51,9 +51,9 @@ public final class AutoViaUpdater extends Plugin {
     public void updateChecker() {
         long interval = config.getInt("Check-Interval");
         long updateInterval = interval*60;
-        getProxy().getScheduler().schedule(this, new Runnable() {
-            @Override
-            public void run() {
+
+        getProxy().getScheduler().schedule(this, () -> {
+            getProxy().getScheduler().runAsync(this, () -> {
                 try {
                     if (isViaVersionEnabled && !isViaVersionDev) {
                         m_viaVersion.updateViaVersion("bungeecord");
@@ -75,7 +75,7 @@ public final class AutoViaUpdater extends Plugin {
                 } catch (URISyntaxException e) {
                     throw new RuntimeException(e);
                 }
-            }
+            });
         }, 0L, updateInterval, TimeUnit.SECONDS);
     }
 
