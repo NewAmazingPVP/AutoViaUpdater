@@ -11,18 +11,32 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "2.0", url = "https://www.spigotmc.org/resources/autoupdateplugins.109683/", authors = "NewAmazingPVP")
+import common.ViaBackwards;
+import common.ViaRewind;
+import common.ViaRewindLegacySupport;
+import common.ViaVersion;
+
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "2.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
 public final class AutoViaUpdater {
 
-    private UpdatePlugins m_updatePlugins;
+    private ViaVersion m_viaVersion;
+    private ViaBackwards m_viaBackwards;
+    private ViaRewind m_viaRewind;
     private Toml config;
     private ProxyServer proxy;
     private File myFile;
     private Path dataDirectory;
+    public boolean isViaVersionEnabled;
+    public boolean isViaVersionDev;
+    public boolean isViaBackwardsEnabled;
+    public boolean isViaBackwardsDev;
+    public boolean isViaRewindEnabled;
+    public boolean isViaRewindDev;
 
     @Inject
     public AutoViaUpdater(ProxyServer proxy, @DataDirectory Path dataDirectory) {
@@ -33,6 +47,9 @@ public final class AutoViaUpdater {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
+        m_viaVersion = new ViaVersion();
+        m_viaBackwards = new ViaBackwards();
+        m_viaRewind = new ViaRewind();
         myFile = dataDirectory.resolve("list.yml").toFile();
         if (!myFile.exists()) {
             try {
@@ -41,14 +58,41 @@ public final class AutoViaUpdater {
                 throw new RuntimeException(e);
             }
         }
-        periodUpdatePlugins();
+        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
+        isViaVersionDev = config.getBoolean("ViaVersion.dev");
+        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
+        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
+        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
+        isViaRewindDev = config.getBoolean("ViaRewind.dev");
+        updateChecker();
     }
 
-    public void periodUpdatePlugins() {
+    public void updateChecker() {
         long interval = config.getLong("updates.interval");
         long bootTime = config.getLong("updates.bootTime");
 
         proxy.getScheduler().buildTask(this, () -> {
+            try {
+                if (isViaVersionEnabled && !isViaVersionDev) {
+                    m_viaVersion.updateViaVersion("spigot");
+                } else if (isViaVersionEnabled && isViaVersionDev) {
+                    m_viaVersion.updateViaVersionDev("spigot");
+                }
+                if (isViaBackwardsEnabled && !isViaBackwardsDev) {
+                    m_viaBackwards.updateViaBackwards("spigot");
+                } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
+                    m_viaBackwards.updateViaBackwardsDev("spigot");
+                }
+                if (isViaRewindEnabled && !isViaRewindDev) {
+                    m_viaRewind.updateViaRewind("spigot");
+                } else if (isViaRewindEnabled && isViaRewindDev) {
+                    m_viaRewind.updateViaRewindDev("spigot");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
         }).delay(Duration.ofSeconds(bootTime)).repeat(Duration.ofMinutes(interval)).schedule();
     }
 
