@@ -18,7 +18,6 @@ import java.time.Duration;
 
 import common.ViaBackwards;
 import common.ViaRewind;
-import common.ViaRewindLegacySupport;
 import common.ViaVersion;
 
 @Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "2.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
@@ -50,14 +49,6 @@ public final class AutoViaUpdater {
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();
-        myFile = dataDirectory.resolve("list.yml").toFile();
-        if (!myFile.exists()) {
-            try {
-                myFile.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
@@ -68,32 +59,31 @@ public final class AutoViaUpdater {
     }
 
     public void updateChecker() {
-        long interval = config.getLong("updates.interval");
-        long bootTime = config.getLong("updates.bootTime");
+        long interval = config.getLong("Check-Interval");
 
         proxy.getScheduler().buildTask(this, () -> {
             try {
                 if (isViaVersionEnabled && !isViaVersionDev) {
-                    m_viaVersion.updateViaVersion("spigot");
+                    m_viaVersion.updateViaVersion("velocity");
                 } else if (isViaVersionEnabled && isViaVersionDev) {
-                    m_viaVersion.updateViaVersionDev("spigot");
+                    m_viaVersion.updateViaVersionDev("velocity");
                 }
                 if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                    m_viaBackwards.updateViaBackwards("spigot");
+                    m_viaBackwards.updateViaBackwards("velocity", proxy);
                 } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                    m_viaBackwards.updateViaBackwardsDev("spigot");
+                    m_viaBackwards.updateViaBackwardsDev("velocity");
                 }
                 if (isViaRewindEnabled && !isViaRewindDev) {
-                    m_viaRewind.updateViaRewind("spigot");
+                    m_viaRewind.updateViaRewind("velocity");
                 } else if (isViaRewindEnabled && isViaRewindDev) {
-                    m_viaRewind.updateViaRewindDev("spigot");
+                    m_viaRewind.updateViaRewindDev("velocity");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (URISyntaxException e) {
                 throw new RuntimeException(e);
             }
-        }).delay(Duration.ofSeconds(bootTime)).repeat(Duration.ofMinutes(interval)).schedule();
+        }).repeat(Duration.ofMinutes(interval)).schedule();
     }
 
     private Toml loadConfig(Path path) {

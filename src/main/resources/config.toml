@@ -1,4 +1,9 @@
 # AutoViaUpdater config
+
+# Check-Interval setting
+# The interval (in minutes) to check for updates
+Check-Interval = 60
+
 [ViaVersion]
 # Enable or disable ViaVersion updates
 enabled = true
@@ -20,7 +25,3 @@ dev = false
 [ViaRewind-Legacy]
 # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord
 enabled = true
-
-# Check-Interval setting
-# The interval (in minutes) to check for updates
-Check-Interval = 60

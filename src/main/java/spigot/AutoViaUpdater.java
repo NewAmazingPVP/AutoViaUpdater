@@ -58,7 +58,7 @@ public final class AutoViaUpdater extends JavaPlugin {
                         m_viaVersion.updateViaVersionDev("spigot");
                     }
                     if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                        m_viaBackwards.updateViaBackwards("spigot");
+                        m_viaBackwards.updateViaBackwards("spigot", null);
                     } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
                         m_viaBackwards.updateViaBackwardsDev("spigot");
                     }
