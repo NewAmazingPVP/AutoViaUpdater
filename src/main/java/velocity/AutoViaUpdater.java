@@ -71,7 +71,7 @@ public final class AutoViaUpdater {
                 if (isViaBackwardsEnabled && !isViaBackwardsDev) {
                     m_viaBackwards.updateViaBackwards("velocity", proxy);
                 } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                    m_viaBackwards.updateViaBackwardsDev("velocity");
+                    m_viaBackwards.updateViaBackwardsDev("velocity", proxy);
                 }
                 if (isViaRewindEnabled && !isViaRewindDev) {
                     m_viaRewind.updateViaRewind("velocity");
