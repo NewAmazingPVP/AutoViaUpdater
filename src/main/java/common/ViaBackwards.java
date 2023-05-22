@@ -129,7 +129,7 @@ public final class ViaBackwards {
         return href.substring(href.indexOf("ViaBackwards-") + "ViaBackwards-".length(), href.lastIndexOf(".jar"));
     }
 
-    public void updateViaBackwardsDev(String platform) throws IOException {
+    public void updateViaBackwardsDev(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
             latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards-dev/lastSuccessfulBuild/artifact/build/libs/ViaBackwards-" + getLatestViaBackwards() + ".jar";
@@ -166,7 +166,7 @@ public final class ViaBackwards {
             }
 
             getLogger().info(ChatColor.BLUE + "Newer ViaBackwards-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
-        } else {
+        } else if (platform.equals("bungeecord")){
             net.md_5.bungee.api.plugin.Plugin viaBackwardsPlugin = ProxyServer.getInstance().getPluginManager().getPlugin("ViaBackwards");
             if (viaBackwardsPlugin != null) {
                 String currentVersion = viaBackwardsPlugin.getDescription().getVersion();
@@ -194,6 +194,33 @@ public final class ViaBackwards {
             }
 
             ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaBackwards-Dev downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else if (platform.equals("velocity")) {
+            Optional<PluginContainer> viaBackwardsPlugin = Proxy.getPluginManager().getPlugin("ViaBackwards");
+            if (viaBackwardsPlugin.isPresent()) {
+                String currentVersion = String.valueOf(viaBackwardsPlugin.get().getDescription().getVersion());
+                try {
+                    if (currentVersion.equals(getLatestViaBackwardsDev())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            System.out.println("New version found. Downloading the latest version of ViaBackwards-Dev...");
+
+            try (InputStream in = new URL(latestVersionUrl).openStream();
+                 FileOutputStream out = new FileOutputStream(outputFilePath)) {
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            } catch (IOException e) {
+                Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaBackwards-Dev: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                return;
+            }
+            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaBackwards-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
         }
     }
     public String getLatestViaBackwardsDev() throws IOException {
