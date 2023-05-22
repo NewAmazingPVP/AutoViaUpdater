@@ -66,9 +66,9 @@ public final class AutoViaUpdater extends Plugin {
                         m_viaBackwards.updateViaBackwardsDev("bungeecord", null);
                     }
                     if (isViaRewindEnabled && !isViaRewindDev) {
-                        m_viaRewind.updateViaRewind("bungeecord");
+                        m_viaRewind.updateViaRewind("bungeecord", null);
                     } else if (isViaRewindEnabled && isViaRewindDev) {
-                        m_viaRewind.updateViaRewindDev("bungeecord");
+                        m_viaRewind.updateViaRewindDev("bungeecord", null);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
