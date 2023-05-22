@@ -64,7 +64,7 @@ public final class AutoViaUpdater {
         proxy.getScheduler().buildTask(this, () -> {
             try {
                 if (isViaVersionEnabled && !isViaVersionDev) {
-                    m_viaVersion.updateViaVersion("velocity");
+                    m_viaVersion.updateViaVersion("velocity", proxy);
                 } else if (isViaVersionEnabled && isViaVersionDev) {
                     m_viaVersion.updateViaVersionDev("velocity");
                 }
