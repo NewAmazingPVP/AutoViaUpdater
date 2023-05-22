@@ -120,7 +120,7 @@ public final class ViaVersion {
                     throw new RuntimeException(e);
                 }
             }
-        } else {
+        } else if (Platform == "bungeecord") {
             net.md_5.bungee.api.plugin.Plugin viaVersionPlugin = ProxyServer.getInstance().getPluginManager().getPlugin("ViaVersion");
             if (viaVersionPlugin != null) {
                 currentVersion = viaVersionPlugin.getDescription().getVersion();
@@ -132,13 +132,21 @@ public final class ViaVersion {
                     throw new RuntimeException(e);
                 }
             }
+        } else {
+            Optional<PluginContainer> viaVersionPlugin = Proxy.getPluginManager().getPlugin("ViaVersion");
+            if (viaViaVersionPlugin.isPresent()) {
+                String currentVersion = String.valueOf(viaVersionPlugin.get().getDescription().getVersion());
+                try {
+                    if (currentVersion.equals(getLatestViaVersionDev())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
-        if(Platform == "spigot") {
-            getLogger().info("Downloading latest version of ViaVersion-Dev...");
-        } else {
-            ProxyServer.getInstance().getLogger().info("Downloading latest version of ViaVersion-Dev...");
-        }
+        System.out.println("New version found. Downloading the latest version of ViaVersion-Dev...");
 
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
@@ -154,8 +162,10 @@ public final class ViaVersion {
 
         if(Platform == "spigot") {
             getLogger().info(ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
-        } else {
+        } else if (Platform == "bungeecord") {
             ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else {
+            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
         }
     }
     public String getLatestViaVersionDev() throws IOException {
