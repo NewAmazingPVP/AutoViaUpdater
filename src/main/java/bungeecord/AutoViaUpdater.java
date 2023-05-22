@@ -56,7 +56,7 @@ public final class AutoViaUpdater extends Plugin {
             getProxy().getScheduler().runAsync(this, () -> {
                 try {
                     if (isViaVersionEnabled && !isViaVersionDev) {
-                        m_viaVersion.updateViaVersion("bungeecord");
+                        m_viaVersion.updateViaVersion("bungeecord", null);
                     } else if (isViaVersionEnabled && isViaVersionDev) {
                         m_viaVersion.updateViaVersionDev("bungeecord");
                     }
