@@ -66,7 +66,7 @@ public final class AutoViaUpdater {
                 if (isViaVersionEnabled && !isViaVersionDev) {
                     m_viaVersion.updateViaVersion("velocity", proxy);
                 } else if (isViaVersionEnabled && isViaVersionDev) {
-                    m_viaVersion.updateViaVersionDev("velocity");
+                    m_viaVersion.updateViaVersionDev("velocity", proxy);
                 }
                 if (isViaBackwardsEnabled && !isViaBackwardsDev) {
                     m_viaBackwards.updateViaBackwards("velocity", proxy);
