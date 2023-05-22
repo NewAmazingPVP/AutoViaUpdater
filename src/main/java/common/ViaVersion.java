@@ -20,7 +20,7 @@ import static org.bukkit.Bukkit.getLogger;
 public final class ViaVersion {
 
     String currentVersion;
-    public void updateViaVersion(String Platform) throws IOException {
+    public void updateViaVersion(String Platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
             latestVersionUrl = "https://ci.viaversion.com/job/ViaVersion/lastSuccessfulBuild/artifact/build/libs/ViaVersion-" + getLatestViaVersion() + ".jar";
@@ -41,7 +41,7 @@ public final class ViaVersion {
                     throw new RuntimeException(e);
                 }
             }
-        } else {
+        } else if (Platform == "bungeecord") {
             net.md_5.bungee.api.plugin.Plugin viaVersionPlugin = ProxyServer.getInstance().getPluginManager().getPlugin("ViaVersion");
             if (viaVersionPlugin != null) {
                 currentVersion = viaVersionPlugin.getDescription().getVersion();
@@ -53,13 +53,21 @@ public final class ViaVersion {
                     throw new RuntimeException(e);
                 }
             }
+        } else if (Platform == "velocity"){
+            Optional<PluginContainer> viaVersionPlugin = Proxy.getPluginManager().getPlugin("ViaVersion");
+            if (viaViaVersionPlugin.isPresent()) {
+                String currentVersion = String.valueOf(viaVersionPlugin.get().getDescription().getVersion());
+                try {
+                    if (currentVersion.equals(getLatestViaVersion())) {
+                        return;
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
 
-        if(Platform == "spigot") {
-            getLogger().info("Downloading latest version of ViaVersion...");
-        } else {
-            ProxyServer.getInstance().getLogger().info("Downloading latest version of ViaVersion...");
-        }
+        System.out.println("New version found. Downloading the latest version of ViaVersion...");
 
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
@@ -75,8 +83,10 @@ public final class ViaVersion {
 
         if(Platform == "spigot") {
             getLogger().info(ChatColor.BLUE + "Newer ViaVersion downloaded to " + outputFilePath + ChatColor.YELLOW + ". Please restart the server to take effect.");
-        } else {
+        } else if (Platform == "bungeecord") {
             ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE+ "Newer ViaVersion downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
+        } else {
+            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
         }
     }
 
@@ -89,7 +99,7 @@ public final class ViaVersion {
         return href.substring(href.indexOf("ViaVersion-") + "ViaVersion-".length(), href.lastIndexOf(".jar"));
     }
 
-    public void updateViaVersionDev(String Platform) throws IOException, URISyntaxException {
+    public void updateViaVersionDev(String Platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException, URISyntaxException {
         String latestVersionUrl;
         try {
             latestVersionUrl = "https://ci.viaversion.com/job/ViaVersion-dev/lastSuccessfulBuild/artifact/build/libs/ViaVersion-" + getLatestViaVersionDev() + ".jar";
