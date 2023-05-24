@@ -1,5 +1,8 @@
 package common;
 
+import com.velocitypowered.api.plugin.PluginContainer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Optional;
 
 import static org.bukkit.Bukkit.getLogger;
 
