@@ -36,16 +36,19 @@ public final class AutoViaUpdater {
     public boolean isViaBackwardsDev;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    private final Metrics.Factory metricsFactory;
 
     @Inject
-    public AutoViaUpdater(ProxyServer proxy, @DataDirectory Path dataDirectory) {
+    public AutoViaUpdater(ProxyServer proxy, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
         this.proxy = proxy;
         this.dataDirectory = dataDirectory;
         config = loadConfig(dataDirectory);
+        this.metricsFactory = metricsFactory;
     }
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
+        metricsFactory.make(this, 18604);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();

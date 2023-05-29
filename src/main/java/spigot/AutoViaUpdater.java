@@ -30,6 +30,7 @@ public final class AutoViaUpdater extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        new Metrics(this, 18603);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();

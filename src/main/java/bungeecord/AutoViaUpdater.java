@@ -31,6 +31,7 @@ public final class AutoViaUpdater extends Plugin {
 
     @Override
     public void onEnable() {
+        new Metrics(this, 18605);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();
