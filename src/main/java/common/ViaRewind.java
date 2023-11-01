@@ -2,7 +2,6 @@ package common;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,7 +24,7 @@ public final class ViaRewind {
     public void updateViaRewind(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/artifact/all/target/ViaRewind-" + getLatestViaRewind() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/artifact/universal/build/libs/ViaRewind-" + getLatestViaRewind() + ".jar";
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -110,10 +109,12 @@ public final class ViaRewind {
                     out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaRewind: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                //Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaRewind: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                System.out.println("Failed to downlaod Viarewind: " + e.getMessage());
                 return;
             }
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaRewind downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaRewind downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("New ViaRewind downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
 
@@ -215,10 +216,12 @@ public final class ViaRewind {
                     out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaRewind-Dev: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                //Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaRewind-Dev: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                System.out.println("Failed to download ViaRewind-Dev: " + e.getMessage());
                 return;
             }
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaRewind-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaRewind-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("Newer ViaRewind-Dev downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
     public String getLatestViaRewindDev() throws IOException {

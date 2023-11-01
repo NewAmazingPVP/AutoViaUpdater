@@ -18,7 +18,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -112,10 +111,12 @@ public final class ViaBackwards {
                     out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaBackwards: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                //Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaBackwards: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                System.out.println("Failed to download ViaBackwards: " + e.getMessage());
                 return;
             }
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaBackwards downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaBackwards downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("Newer ViaBackwards downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
 
@@ -217,10 +218,12 @@ public final class ViaBackwards {
                     out.write(buffer, 0, bytesRead);
                 }
             } catch (IOException e) {
-                Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaBackwards-Dev: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                //Proxy.getConsoleCommandSource().sendMessage((Component.text("Failed to download ViaBackwards-Dev: ", NamedTextColor.RED).append(Component.text(e.getMessage()))));
+                System.out.println("Failed to download ViaBackwards-Dev: " + e.getMessage());
                 return;
             }
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaBackwards-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaBackwards-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("Newer ViaBackwards-Dev downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
     public String getLatestViaBackwardsDev() throws IOException {
