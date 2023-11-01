@@ -20,7 +20,7 @@ import common.ViaBackwards;
 import common.ViaRewind;
 import common.ViaVersion;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "2.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "4.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
 public final class AutoViaUpdater {
 
     private ViaVersion m_viaVersion;

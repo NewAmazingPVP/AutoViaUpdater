@@ -2,7 +2,6 @@ package common;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -90,7 +89,8 @@ public final class ViaVersion {
         } else if (Platform == "bungeecord") {
             ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE+ "Newer ViaVersion downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
         } else {
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("Newer ViaVersion downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
 
@@ -169,7 +169,8 @@ public final class ViaVersion {
         } else if (Platform == "bungeecord") {
             ProxyServer.getInstance().getLogger().info(net.md_5.bungee.api.ChatColor.BLUE + "Newer ViaVersion-Dev downloaded to " + outputFilePath + net.md_5.bungee.api.ChatColor.YELLOW + ". Please restart the server to take effect.");
         } else {
-            Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            //Proxy.getConsoleCommandSource().sendMessage((Component.text("Newer ViaVersion-Dev downloaded to ", NamedTextColor.BLUE).append(Component.text(outputFilePath)).append(Component.text(". Please restart the server to take effect.", NamedTextColor.YELLOW))));
+            System.out.println("Newer ViaVersion-Dev downloaded to " + outputFilePath + ". Please restart the server to take effect.");
         }
     }
     public String getLatestViaVersionDev() throws IOException {

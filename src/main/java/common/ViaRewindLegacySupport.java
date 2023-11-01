@@ -19,7 +19,7 @@ public final class ViaRewindLegacySupport {
     public void updateViaRewindLegacySupport() throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind%20Legacy%20Support/lastSuccessfulBuild/artifact/target/viarewind-legacy-support-" + getLatestViaRewindLegacySupport() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind%20Legacy%20Support/lastSuccessfulBuild/artifact/build/libs/ViaRewind-Legacy-Support-" + getLatestViaRewindLegacySupport() + ".jar";
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -60,9 +60,13 @@ public final class ViaRewindLegacySupport {
         Element artifactLink = doc.selectFirst("a[href$=.jar]");
         assert artifactLink != null;
         String href = artifactLink.attr("href");
-        int start = href.indexOf("viarewind-legacy-support-") + "viarewind-legacy-support-".length();
+        int start = href.indexOf("Legacy-Support-") + "Legacy-Support-".length();
         int end = href.lastIndexOf(".jar");
-        return href.substring(start, end);
+        String finalLink = href.substring(start, end);
+        if (finalLink.contains("-sources")) {
+            finalLink = finalLink.replace("-sources", "");
+        }
+        return finalLink;
     }
 
 }
