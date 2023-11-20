@@ -1,5 +1,7 @@
 package common;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.velocitypowered.api.plugin.PluginContainer;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.ProxyServer;
@@ -24,7 +26,7 @@ public final class ViaRewind {
     public void updateViaRewind(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/artifact/universal/build/libs/ViaRewind-" + getLatestViaRewind() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/artifact/universal/build/libs/" + getLatestViaRewind();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -120,18 +122,17 @@ public final class ViaRewind {
 
 
     public String getLatestViaRewind() throws IOException {
-        String url = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/";
-        Document doc = Jsoup.connect(url).get();
-        Element artifactLink = doc.selectFirst("a[href$=.jar]");
-        assert artifactLink != null;
-        String href = artifactLink.attr("href");
-        return href.substring(href.indexOf("ViaRewind-") + "ViaRewind-".length(), href.lastIndexOf(".jar"));
+        String jenkinsUrl = "https://ci.viaversion.com/job/ViaRewind/lastSuccessfulBuild/api/json";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
+
+        return node.get("artifacts").get(0).get("fileName").asText();
     }
 
     public void updateViaRewindDev(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/ViaRewind-" + getLatestViaRewind() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/" + getLatestViaRewind();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -225,11 +226,10 @@ public final class ViaRewind {
         }
     }
     public String getLatestViaRewindDev() throws IOException {
-        String url = "https://ci.viaversion.com/job/ViaRewind-Dev/lastSuccessfulBuild/";
-        Document doc = Jsoup.connect(url).get();
-        Element artifactLink = doc.selectFirst("a[href$=.jar]");
-        assert artifactLink != null;
-        String href = artifactLink.attr("href");
-        return href.substring(href.indexOf("ViaRewind-") + "ViaRewind-".length(), href.lastIndexOf(".jar"));
+        String jenkinsUrl = "https://ci.viaversion.com/job/ViaRewind-Dev/lastSuccessfulBuild/api/json";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
+
+        return node.get("artifacts").get(0).get("fileName").asText();
     }
 }
