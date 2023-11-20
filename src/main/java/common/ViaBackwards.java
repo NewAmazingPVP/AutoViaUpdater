@@ -1,5 +1,7 @@
 package common;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.velocitypowered.api.plugin.PluginContainer;
 import net.md_5.bungee.api.ProxyServer;
 import org.bukkit.Bukkit;
@@ -26,7 +28,7 @@ public final class ViaBackwards {
     public void updateViaBackwards(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards/lastSuccessfulBuild/artifact/build/libs/ViaBackwards-" + getLatestViaBackwards() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards/lastSuccessfulBuild/artifact/build/libs/" + getLatestViaBackwards();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -122,18 +124,17 @@ public final class ViaBackwards {
 
 
     public String getLatestViaBackwards() throws IOException {
-        String url = "https://ci.viaversion.com/job/ViaBackwards/lastSuccessfulBuild/";
-        Document doc = Jsoup.connect(url).get();
-        Element artifactLink = doc.selectFirst("a[href$=.jar]");
-        assert artifactLink != null;
-        String href = artifactLink.attr("href");
-        return href.substring(href.indexOf("ViaBackwards-") + "ViaBackwards-".length(), href.lastIndexOf(".jar"));
+        String jenkinsUrl = "https://ci.viaversion.com/job/ViaBackwards/lastSuccessfulBuild/api/json";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
+
+        return node.get("artifacts").get(0).get("fileName").asText();
     }
 
     public void updateViaBackwardsDev(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards-dev/lastSuccessfulBuild/artifact/build/libs/ViaBackwards-" + getLatestViaBackwards() + ".jar";
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards-dev/lastSuccessfulBuild/artifact/build/libs/" + getLatestViaBackwards();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -227,11 +228,10 @@ public final class ViaBackwards {
         }
     }
     public String getLatestViaBackwardsDev() throws IOException {
-        String url = "https://ci.viaversion.com/job/ViaBackwards-Dev/lastSuccessfulBuild/";
-        Document doc = Jsoup.connect(url).get();
-        Element artifactLink = doc.selectFirst("a[href$=.jar]");
-        assert artifactLink != null;
-        String href = artifactLink.attr("href");
-        return href.substring(href.indexOf("ViaBackwards-") + "ViaBackwards-".length(), href.lastIndexOf(".jar"));
+        String jenkinsUrl = "https://ci.viaversion.com/job/ViaBackwards-Dev/lastSuccessfulBuild/api/json";
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
+
+        return node.get("artifacts").get(0).get("fileName").asText();
     }
 }
