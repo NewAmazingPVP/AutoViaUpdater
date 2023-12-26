@@ -132,7 +132,7 @@ public final class ViaRewind {
     public void updateViaRewindDev(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/" + getLatestViaRewind();
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaRewind-dev/lastSuccessfulBuild/artifact/all/target/" + getLatestViaRewindDev();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

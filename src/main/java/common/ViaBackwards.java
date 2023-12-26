@@ -134,7 +134,7 @@ public final class ViaBackwards {
     public void updateViaBackwardsDev(String platform, com.velocitypowered.api.proxy.ProxyServer Proxy) throws IOException {
         String latestVersionUrl;
         try {
-            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards-dev/lastSuccessfulBuild/artifact/build/libs/" + getLatestViaBackwards();
+            latestVersionUrl = "https://ci.viaversion.com/job/ViaBackwards-dev/lastSuccessfulBuild/artifact/build/libs/" + getLatestViaBackwardsDev();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -231,7 +231,6 @@ public final class ViaBackwards {
         String jenkinsUrl = "https://ci.viaversion.com/job/ViaBackwards-Dev/lastSuccessfulBuild/api/json";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
-
         return node.get("artifacts").get(0).get("fileName").asText();
     }
 }
