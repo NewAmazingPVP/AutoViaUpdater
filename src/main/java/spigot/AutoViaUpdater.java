@@ -59,28 +59,22 @@ public final class AutoViaUpdater extends JavaPlugin {
             public void run() {
                 try {
                     if (isViaVersionEnabled && !isViaVersionDev) {
-                        //m_viaVersion.updateViaVersion("spigot", null);
                         updateVia("ViaVersion", getDataFolder().getParent(), false);
                     } else if (isViaVersionEnabled && isViaVersionDev) {
-                        //m_viaVersion.updateViaVersionDev("spigot", null);
                         updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                        //m_viaBackwards.updateViaBackwards("spigot", null);
                         updateVia("ViaBackwards", getDataFolder().getParent(), false);
                     } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                        //m_viaBackwards.updateViaBackwardsDev("spigot", null);
                         updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaRewindEnabled && !isViaRewindDev) {
-                        //m_viaRewind.updateViaRewind("spigot", null);
                         updateVia("ViaRewind", getDataFolder().getParent(), false);
                     } else if (isViaRewindEnabled && isViaRewindDev) {
-                        //m_viaRewind.updateViaRewindDev("spigot", null);
                         updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaRewindLegacyEnabled) {
-                        updateVia("ViaRewind%20Legacy%20Support", getDataFolder().getParent(), true);
+                        updateVia("ViaRewind%20Legacy%20Support", getDataFolder().getParent(), false);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
