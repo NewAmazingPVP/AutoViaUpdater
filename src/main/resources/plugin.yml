@@ -1,5 +1,5 @@
 name: AutoViaUpdater
-version: 5.0
+version: 6.0
 main: spigot.AutoViaUpdater
 authors:
   - NewAmazingPVP
@@ -8,5 +8,5 @@ commands:
   update:
     description: Force update checker for all vias!
     usage: /updatevias
-    permission: c
+    permission: autoviaupdater.admin
     default: op
