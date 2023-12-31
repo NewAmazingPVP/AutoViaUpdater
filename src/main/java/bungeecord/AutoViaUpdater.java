@@ -1,9 +1,5 @@
 package bungeecord;
 
-import common.ViaBackwards;
-import common.ViaRewind;
-import common.ViaRewindLegacySupport;
-import common.ViaVersion;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
@@ -14,15 +10,12 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
-import static commonrework.YamlFileManager.createYamlFile;
+import static common.BuildYml.createYamlFile;
+import static common.UpdateVias.updateVia;
 
 public final class AutoViaUpdater extends Plugin {
 
     private Configuration config;
-    private ViaVersion m_viaVersion;
-    private ViaBackwards m_viaBackwards;
-    private ViaRewind m_viaRewind;
-    private ViaRewindLegacySupport m_viaRewindLegacySupport;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
     public boolean isViaBackwardsEnabled;
@@ -33,14 +26,10 @@ public final class AutoViaUpdater extends Plugin {
 
     @Override
     public void onEnable() {
-        //createYamlFile();
         new Metrics(this, 18605);
-        m_viaVersion = new ViaVersion();
-        m_viaBackwards = new ViaBackwards();
-        m_viaRewind = new ViaRewind();
-        m_viaRewindLegacySupport = new ViaRewindLegacySupport();
         saveDefaultConfig();
         loadConfiguration();
+        createYamlFile(getDataFolder().getAbsolutePath());
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
@@ -60,24 +49,22 @@ public final class AutoViaUpdater extends Plugin {
             getProxy().getScheduler().runAsync(this, () -> {
                 try {
                     if (isViaVersionEnabled && !isViaVersionDev) {
-                        m_viaVersion.updateViaVersion("bungeecord", null);
+                        updateVia("ViaVersion", getDataFolder().getParent(), false);
                     } else if (isViaVersionEnabled && isViaVersionDev) {
-                        m_viaVersion.updateViaVersionDev("bungeecord", null);
+                        updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                        m_viaBackwards.updateViaBackwards("bungeecord", null);
+                        updateVia("ViaBackwards", getDataFolder().getParent(), false);
                     } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                        m_viaBackwards.updateViaBackwardsDev("bungeecord", null);
+                        updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaRewindEnabled && !isViaRewindDev) {
-                        m_viaRewind.updateViaRewind("bungeecord", null);
+                        updateVia("ViaRewind", getDataFolder().getParent(), false);
                     } else if (isViaRewindEnabled && isViaRewindDev) {
-                        m_viaRewind.updateViaRewindDev("bungeecord", null);
+                        updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
                 }
             });
         }, 0L, updateInterval, TimeUnit.SECONDS);

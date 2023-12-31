@@ -16,18 +16,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import common.ViaBackwards;
-import common.ViaRewind;
-import common.ViaVersion;
-
-import static commonrework.YamlFileManager.createYamlFile;
+import static common.BuildYml.createYamlFile;
+import static common.UpdateVias.updateVia;
 
 @Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "5.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
 public final class AutoViaUpdater {
 
-    private ViaVersion m_viaVersion;
-    private ViaBackwards m_viaBackwards;
-    private ViaRewind m_viaRewind;
     private Toml config;
     private ProxyServer proxy;
     private File myFile;
@@ -50,11 +44,8 @@ public final class AutoViaUpdater {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        //createYamlFile();
+        createYamlFile(dataDirectory.toAbsolutePath().toString());
         metricsFactory.make(this, 18604);
-        m_viaVersion = new ViaVersion();
-        m_viaBackwards = new ViaBackwards();
-        m_viaRewind = new ViaRewind();
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
@@ -70,24 +61,22 @@ public final class AutoViaUpdater {
         proxy.getScheduler().buildTask(this, () -> {
             try {
                 if (isViaVersionEnabled && !isViaVersionDev) {
-                    m_viaVersion.updateViaVersion("velocity", proxy);
+                    updateVia("ViaVersion", dataDirectory.getParent().toString(), false);
                 } else if (isViaVersionEnabled && isViaVersionDev) {
-                    m_viaVersion.updateViaVersionDev("velocity", proxy);
+                    updateVia("ViaVersion-Dev", dataDirectory.getParent().toString(), true);
                 }
                 if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                    m_viaBackwards.updateViaBackwards("velocity", proxy);
+                    updateVia("ViaBackwards", dataDirectory.getParent().toString(), false);
                 } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                    m_viaBackwards.updateViaBackwardsDev("velocity", proxy);
+                    updateVia("ViaBackwards-Dev", dataDirectory.getParent().toString(), true);
                 }
                 if (isViaRewindEnabled && !isViaRewindDev) {
-                    m_viaRewind.updateViaRewind("velocity", proxy);
+                    updateVia("ViaRewind", dataDirectory.getParent().toString(), false);
                 } else if (isViaRewindEnabled && isViaRewindDev) {
-                    m_viaRewind.updateViaRewindDev("velocity", proxy);
+                    updateVia("ViaRewind-Dev", dataDirectory.getParent().toString(), true);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
             }
         }).repeat(Duration.ofMinutes(interval)).schedule();
     }

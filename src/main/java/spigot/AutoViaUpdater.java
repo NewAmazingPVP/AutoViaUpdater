@@ -1,28 +1,17 @@
 package spigot;
 
-import common.ViaBackwards;
-import common.ViaRewind;
-import common.ViaRewindLegacySupport;
-import common.ViaVersion;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 
-import static commonrework.UpdateVias.updateVia;
-import static commonrework.YamlFileManager.createYamlFile;
+import static common.UpdateVias.updateVia;
+import static common.BuildYml.createYamlFile;
 
 public final class AutoViaUpdater extends JavaPlugin {
 
     private FileConfiguration config;
-    private ViaVersion m_viaVersion;
-    private ViaBackwards m_viaBackwards;
-    private ViaRewind m_viaRewind;
-    private ViaRewindLegacySupport m_viaRewindLegacySupport;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
     public boolean isViaBackwardsEnabled;
@@ -35,10 +24,6 @@ public final class AutoViaUpdater extends JavaPlugin {
     public void onEnable() {
 
         new Metrics(this, 18603);
-        m_viaVersion = new ViaVersion();
-        m_viaBackwards = new ViaBackwards();
-        m_viaRewind = new ViaRewind();
-        m_viaRewindLegacySupport = new ViaRewindLegacySupport();
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath());
         isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
