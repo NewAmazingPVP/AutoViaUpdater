@@ -1,19 +1,16 @@
-package commonrework;
+package common;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.Plugin;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 
-import static commonrework.YamlFileManager.getDownloadedBuild;
-import static commonrework.YamlFileManager.updateBuildNumber;
+import static common.BuildYml.getDownloadedBuild;
+import static common.BuildYml.updateBuildNumber;
 
 
 public class UpdateVias {

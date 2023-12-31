@@ -1,9 +1,8 @@
-package commonrework;
+package common;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,12 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 
-public class YamlFileManager {
+public class BuildYml {
 
     public static String file;
 
     public static void createYamlFile(String folder) {
-        file = folder + "/donottouch.yml";
+        file = folder + "/doNotTouch.yml";
         Path filePath = Paths.get(file);
 
         if (!Files.exists(filePath)) {
