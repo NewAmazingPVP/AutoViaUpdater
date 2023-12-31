@@ -1,11 +1,17 @@
 package velocity;
 
 import com.moandjiezana.toml.Toml;
+import com.velocitypowered.api.command.CommandManager;
+import com.velocitypowered.api.command.CommandMeta;
+import com.velocitypowered.api.command.CommandSource;
+import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -53,32 +59,41 @@ public final class AutoViaUpdater {
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
         updateChecker();
+        CommandManager commandManager = proxy.getCommandManager();
+        CommandMeta commandMeta = commandManager.metaBuilder("updatevias")
+                .plugin(this)
+                .build();
+
+        SimpleCommand simpleCommand = new UpdateCommand();
+        commandManager.register(commandMeta, simpleCommand);
     }
 
     public void updateChecker() {
         long interval = config.getLong("Check-Interval");
 
-        proxy.getScheduler().buildTask(this, () -> {
-            try {
-                if (isViaVersionEnabled && !isViaVersionDev) {
-                    updateVia("ViaVersion", dataDirectory.getParent().toString(), false);
-                } else if (isViaVersionEnabled && isViaVersionDev) {
-                    updateVia("ViaVersion-Dev", dataDirectory.getParent().toString(), true);
-                }
-                if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                    updateVia("ViaBackwards", dataDirectory.getParent().toString(), false);
-                } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                    updateVia("ViaBackwards-Dev", dataDirectory.getParent().toString(), true);
-                }
-                if (isViaRewindEnabled && !isViaRewindDev) {
-                    updateVia("ViaRewind", dataDirectory.getParent().toString(), false);
-                } else if (isViaRewindEnabled && isViaRewindDev) {
-                    updateVia("ViaRewind-Dev", dataDirectory.getParent().toString(), true);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
+        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).schedule();
+    }
+
+    public void checkUpdateVias(){
+        try {
+            if (isViaVersionEnabled && !isViaVersionDev) {
+                updateVia("ViaVersion", dataDirectory.getParent().toString(), false);
+            } else if (isViaVersionEnabled && isViaVersionDev) {
+                updateVia("ViaVersion-Dev", dataDirectory.getParent().toString(), true);
             }
-        }).repeat(Duration.ofMinutes(interval)).schedule();
+            if (isViaBackwardsEnabled && !isViaBackwardsDev) {
+                updateVia("ViaBackwards", dataDirectory.getParent().toString(), false);
+            } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
+                updateVia("ViaBackwards-Dev", dataDirectory.getParent().toString(), true);
+            }
+            if (isViaRewindEnabled && !isViaRewindDev) {
+                updateVia("ViaRewind", dataDirectory.getParent().toString(), false);
+            } else if (isViaRewindEnabled && isViaRewindDev) {
+                updateVia("ViaRewind-Dev", dataDirectory.getParent().toString(), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Toml loadConfig(Path path) {
@@ -101,5 +116,18 @@ public final class AutoViaUpdater {
             }
         }
         return new Toml().read(file);
+    }
+
+    public class UpdateCommand implements SimpleCommand {
+        @Override
+        public boolean hasPermission(final Invocation invocation) {
+            return invocation.source().hasPermission("autoviaupdater.admin");
+        }
+        @Override
+        public void execute(Invocation invocation) {
+            CommandSource source = invocation.source();
+            checkUpdateVias();
+            source.sendMessage(Component.text("Update checker for vias successful!").color(NamedTextColor.AQUA));
+        }
     }
 }

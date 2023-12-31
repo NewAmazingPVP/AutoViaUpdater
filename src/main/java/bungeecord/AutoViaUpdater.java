@@ -1,9 +1,14 @@
 package bungeecord;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
+import org.bukkit.command.CommandExecutor;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -37,8 +42,8 @@ public final class AutoViaUpdater extends Plugin {
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
         isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
-
         updateChecker();
+        ProxyServer.getInstance().getPluginManager().registerCommand(this, new UpdateCommand());
     }
 
     public void updateChecker() {
@@ -46,27 +51,7 @@ public final class AutoViaUpdater extends Plugin {
         long updateInterval = interval*60;
 
         getProxy().getScheduler().schedule(this, () -> {
-            getProxy().getScheduler().runAsync(this, () -> {
-                try {
-                    if (isViaVersionEnabled && !isViaVersionDev) {
-                        updateVia("ViaVersion", getDataFolder().getParent(), false);
-                    } else if (isViaVersionEnabled && isViaVersionDev) {
-                        updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
-                    }
-                    if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                        updateVia("ViaBackwards", getDataFolder().getParent(), false);
-                    } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                        updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
-                    }
-                    if (isViaRewindEnabled && !isViaRewindDev) {
-                        updateVia("ViaRewind", getDataFolder().getParent(), false);
-                    } else if (isViaRewindEnabled && isViaRewindDev) {
-                        updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            getProxy().getScheduler().runAsync(this, this::checkUpdateVias);
         }, 0L, updateInterval, TimeUnit.SECONDS);
     }
 
@@ -91,4 +76,39 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
+    public void checkUpdateVias(){
+        try {
+            if (isViaVersionEnabled && !isViaVersionDev) {
+                updateVia("ViaVersion", getDataFolder().getParent(), false);
+            } else if (isViaVersionEnabled && isViaVersionDev) {
+                updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
+            }
+            if (isViaBackwardsEnabled && !isViaBackwardsDev) {
+                updateVia("ViaBackwards", getDataFolder().getParent(), false);
+            } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
+                updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
+            }
+            if (isViaRewindEnabled && !isViaRewindDev) {
+                updateVia("ViaRewind", getDataFolder().getParent(), false);
+            } else if (isViaRewindEnabled && isViaRewindDev) {
+                updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public class UpdateCommand extends Command {
+
+        public UpdateCommand() {
+            super("updatevias", "autoviaupdater.admin");
+        }
+
+        @Override
+        public void execute(CommandSender sender, String[] args) {
+            checkUpdateVias();
+            sender.sendMessage(ChatColor.AQUA + "Update checker for vias successful!");
+        }
+    }
+
 }
+
