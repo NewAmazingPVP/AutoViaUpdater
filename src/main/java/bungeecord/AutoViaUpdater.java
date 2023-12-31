@@ -29,7 +29,7 @@ public final class AutoViaUpdater extends Plugin {
         new Metrics(this, 18605);
         saveDefaultConfig();
         loadConfiguration();
-        createYamlFile(getDataFolder().getAbsolutePath());
+        createYamlFile(getDataFolder().getAbsolutePath(), true);
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
