@@ -2,6 +2,7 @@ package commonrework;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
@@ -67,6 +68,22 @@ public class UpdateVias {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
 
-        return node.get("artifacts").get(0).get("relativePath").asText();
+        ArrayNode artifacts = (ArrayNode) node.get("artifacts");
+
+        JsonNode selectedArtifact = null;
+        for (JsonNode artifact : artifacts) {
+            String fileName = artifact.get("fileName").asText();
+            if (!fileName.contains("sources")) {
+                selectedArtifact = artifact;
+                break;
+            }
+        }
+
+        if (selectedArtifact == null && !artifacts.isEmpty()) {
+            selectedArtifact = artifacts.get(0);
+        }
+
+        return selectedArtifact.get("relativePath").asText();
     }
+
 }
