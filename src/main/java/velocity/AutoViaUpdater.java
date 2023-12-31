@@ -44,7 +44,7 @@ public final class AutoViaUpdater {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
-        createYamlFile(dataDirectory.toAbsolutePath().toString());
+        createYamlFile(dataDirectory.toAbsolutePath().toString(), true);
         metricsFactory.make(this, 18604);
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");

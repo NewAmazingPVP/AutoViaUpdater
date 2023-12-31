@@ -25,7 +25,7 @@ public final class AutoViaUpdater extends JavaPlugin {
 
         new Metrics(this, 18603);
         loadConfiguration();
-        createYamlFile(getDataFolder().getAbsolutePath());
+        createYamlFile(getDataFolder().getAbsolutePath(), false);
         isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
         isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");

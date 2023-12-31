@@ -15,11 +15,11 @@ import static common.BuildYml.updateBuildNumber;
 
 public class UpdateVias {
     private static String name;
-    private static String fileF;
+    private static String directory;
     private static String branch;
-    public static void updateVia(String viaName, String fileE, boolean isDev) throws IOException {
+    public static void updateVia(String viaName, String dataDirectory, boolean isDev) throws IOException {
         name = viaName;
-        fileF = fileE;
+        directory = dataDirectory;
         if(isDev){
             branch = "dev";
         } else {
@@ -48,7 +48,7 @@ public class UpdateVias {
 
     public static void downloadUpdate(String s) throws IOException {
         String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
-        String outputFilePath = fileF + "/" + s + ".jar";
+        String outputFilePath = directory + "/" + s + ".jar";
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
             byte[] buffer = new byte[1024];
@@ -56,7 +56,9 @@ public class UpdateVias {
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
-        } catch (IOException ignored) {
+            System.out.println("New version of " + s + " downloaded. Please restart the server");
+        } catch (IOException e) {
+            System.out.println("Error downloading new version of " + s + "\n" + e);
         }
     }
 

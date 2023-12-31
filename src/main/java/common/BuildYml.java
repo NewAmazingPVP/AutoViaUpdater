@@ -14,7 +14,7 @@ public class BuildYml {
 
     public static String file;
 
-    public static void createYamlFile(String folder) {
+    public static void createYamlFile(String folder, boolean isProxy) {
         file = folder + "/doNotTouch.yml";
         Path filePath = Paths.get(file);
 
@@ -24,25 +24,35 @@ public class BuildYml {
 
             Yaml yaml = new Yaml(options);
 
-            Map<String, Integer> initialData = Map.ofEntries(
-                    Map.entry("ViaVersion", -1),
-                    Map.entry("ViaVersion-Dev", -1),
-                    Map.entry("ViaBackwards", -1),
-                    Map.entry("ViaBackwards-Dev", -1),
-                    Map.entry("ViaRewind", -1),
-                    Map.entry("ViaRewind-Dev", -1),
-                    Map.entry("ViaRewind%20Legacy%20Support", -1)
-            );
+            Map<String, Integer> initialData;
+            if(isProxy) {
+                initialData = Map.ofEntries(
+                        Map.entry("ViaVersion", -1),
+                        Map.entry("ViaVersion-Dev", -1),
+                        Map.entry("ViaBackwards", -1),
+                        Map.entry("ViaBackwards-Dev", -1),
+                        Map.entry("ViaRewind", -1),
+                        Map.entry("ViaRewind-Dev", -1)
+                );
+            } else {
+                initialData = Map.ofEntries(
+                        Map.entry("ViaVersion", -1),
+                        Map.entry("ViaVersion-Dev", -1),
+                        Map.entry("ViaBackwards", -1),
+                        Map.entry("ViaBackwards-Dev", -1),
+                        Map.entry("ViaRewind", -1),
+                        Map.entry("ViaRewind-Dev", -1),
+                        Map.entry("ViaRewind%20Legacy%20Support", -1)
+                );
+            }
 
 
             try (FileWriter writer = new FileWriter(filePath.toFile())) {
                 yaml.dump(initialData, writer);
-                System.out.println("YAML file created successfully.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("YAML file already exists. Skipping creation.");
         }
     }
 
@@ -56,7 +66,7 @@ public class BuildYml {
                 writeYamlFile(filePath, data);
                 System.out.println(key + " build number updated to " + newBuildNumber);
             } else {
-                System.out.println(key + " not found in the YAML file.");
+                System.out.println(key + " not found in the YAML file. Did you touch the doNotTouch.yml file? Regenerate it");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -71,7 +81,7 @@ public class BuildYml {
             if (data.containsKey(key)) {
                 return data.get(key);
             } else {
-                System.out.println(key + " not found in the YAML file.");
+                System.out.println(key + " not found in the YAML file. Did you touch the doNotTouch.yml file? Regenerate it");
                 return -1;
             }
         } catch (IOException e) {
@@ -88,10 +98,10 @@ public class BuildYml {
                 Map<String, Integer> result = (Map<String, Integer>) obj;
                 return result;
             } else {
-                throw new RuntimeException("Invalid YAML file format. Expected a Map.");
+                throw new RuntimeException("Invalid YAML file format. Expected a Map. Did you touch the doNotTouch.yml file? Regenerate it");
             }
         } catch (IOException e) {
-            throw new IOException("Error reading YAML file", e);
+            throw new IOException("Error reading YAML file. Did you touch the doNotTouch.yml file? Regenerate it", e);
         }
     }
 
