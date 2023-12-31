@@ -13,6 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import static commonrework.UpdateVias.updateVia;
+import static commonrework.YamlFileManager.createYamlFile;
+
 public final class AutoViaUpdater extends JavaPlugin {
 
     private FileConfiguration config;
@@ -30,12 +33,14 @@ public final class AutoViaUpdater extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
         new Metrics(this, 18603);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
         m_viaRewind = new ViaRewind();
         m_viaRewindLegacySupport = new ViaRewindLegacySupport();
         loadConfiguration();
+        createYamlFile(getDataFolder().getAbsolutePath());
         isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
         isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
         isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
@@ -54,27 +59,31 @@ public final class AutoViaUpdater extends JavaPlugin {
             public void run() {
                 try {
                     if (isViaVersionEnabled && !isViaVersionDev) {
-                        m_viaVersion.updateViaVersion("spigot", null);
+                        //m_viaVersion.updateViaVersion("spigot", null);
+                        updateVia("ViaVersion", getDataFolder().getParent(), false);
                     } else if (isViaVersionEnabled && isViaVersionDev) {
-                        m_viaVersion.updateViaVersionDev("spigot", null);
+                        //m_viaVersion.updateViaVersionDev("spigot", null);
+                        updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                        m_viaBackwards.updateViaBackwards("spigot", null);
+                        //m_viaBackwards.updateViaBackwards("spigot", null);
+                        updateVia("ViaBackwards", getDataFolder().getParent(), false);
                     } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                        m_viaBackwards.updateViaBackwardsDev("spigot", null);
+                        //m_viaBackwards.updateViaBackwardsDev("spigot", null);
+                        updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaRewindEnabled && !isViaRewindDev) {
-                        m_viaRewind.updateViaRewind("spigot", null);
+                        //m_viaRewind.updateViaRewind("spigot", null);
+                        updateVia("ViaRewind", getDataFolder().getParent(), false);
                     } else if (isViaRewindEnabled && isViaRewindDev) {
-                        m_viaRewind.updateViaRewindDev("spigot", null);
+                        //m_viaRewind.updateViaRewindDev("spigot", null);
+                        updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
                     }
                     if (isViaRewindLegacyEnabled) {
-                        m_viaRewindLegacySupport.updateViaRewindLegacySupport();
+                        updateVia("ViaRewind%20Legacy%20Support", getDataFolder().getParent(), true);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
-                } catch (URISyntaxException e) {
-                    throw new RuntimeException(e);
                 }
             }
         }, 0L, 20L * 60L * interval);

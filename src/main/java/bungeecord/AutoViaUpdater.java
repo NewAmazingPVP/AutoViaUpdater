@@ -14,6 +14,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
+import static commonrework.YamlFileManager.createYamlFile;
+
 public final class AutoViaUpdater extends Plugin {
 
     private Configuration config;
@@ -31,6 +33,7 @@ public final class AutoViaUpdater extends Plugin {
 
     @Override
     public void onEnable() {
+        //createYamlFile();
         new Metrics(this, 18605);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
