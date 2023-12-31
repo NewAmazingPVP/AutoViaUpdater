@@ -20,6 +20,8 @@ import common.ViaBackwards;
 import common.ViaRewind;
 import common.ViaVersion;
 
+import static commonrework.YamlFileManager.createYamlFile;
+
 @Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "5.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
 public final class AutoViaUpdater {
 
@@ -48,6 +50,7 @@ public final class AutoViaUpdater {
 
     @Subscribe
     public void onProxyInitialize(ProxyInitializeEvent event) {
+        //createYamlFile();
         metricsFactory.make(this, 18604);
         m_viaVersion = new ViaVersion();
         m_viaBackwards = new ViaBackwards();
