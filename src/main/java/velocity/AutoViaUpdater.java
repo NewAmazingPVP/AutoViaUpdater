@@ -25,7 +25,7 @@ import java.time.Duration;
 import static common.BuildYml.createYamlFile;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "5.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "6.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
 public final class AutoViaUpdater {
 
     private Toml config;

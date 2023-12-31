@@ -28,6 +28,7 @@ public class UpdateVias {
         if (getDownloadedBuild(viaName) == -1) {
             downloadUpdate(viaName);
             updateBuildNumber(viaName, getLatestBuild());
+            System.out.println(viaName + " was downloaded for the first time. Please restart to let the plugin take in effect.");
         } else if(getDownloadedBuild(viaName) != getLatestBuild()){
             downloadUpdate(viaName);
             updateBuildNumber(viaName, getLatestBuild());
