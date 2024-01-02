@@ -8,14 +8,13 @@ import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
-import org.bukkit.command.CommandExecutor;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
 import static common.BuildYml.createYamlFile;
+import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
 public final class AutoViaUpdater extends Plugin {
@@ -78,6 +77,15 @@ public final class AutoViaUpdater extends Plugin {
 
     public void checkUpdateVias(){
         try {
+            if(getProxy().getPluginManager().getPlugin("ViaVersion") == null){
+                updateBuildNumber("ViaVersion", -1);
+            }
+            if(getProxy().getPluginManager().getPlugin("ViaBackwards") == null){
+                updateBuildNumber("ViaBackwards", -1);
+            }
+            if(getProxy().getPluginManager().getPlugin("ViaRewind") == null){
+                updateBuildNumber("ViaRewind", -1);
+            }
             if (isViaVersionEnabled && !isViaVersionDev) {
                 updateVia("ViaVersion", getDataFolder().getParent(), false);
             } else if (isViaVersionEnabled && isViaVersionDev) {
