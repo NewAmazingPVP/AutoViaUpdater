@@ -1,5 +1,5 @@
 name: AutoViaUpdater
-version: 6.0
+version: 6.5
 main: spigot.AutoViaUpdater
 authors:
   - NewAmazingPVP
@@ -10,3 +10,8 @@ commands:
     usage: /updatevias
     permission: autoviaupdater.admin
     default: op
+softdepend:
+  - ViaVersion
+  - ViaBackwards
+  - ViaRewind
+  - ViaRewind-Legacy-Support

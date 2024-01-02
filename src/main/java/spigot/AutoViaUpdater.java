@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
+import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 import static common.BuildYml.createYamlFile;
 
@@ -54,6 +55,18 @@ public final class AutoViaUpdater extends JavaPlugin {
 
     public void checkUpdateVias(){
         try {
+            if(Bukkit.getPluginManager().getPlugin("ViaVersion") == null){
+                updateBuildNumber("ViaVersion", -1);
+            }
+            if(Bukkit.getPluginManager().getPlugin("ViaBackwards") == null){
+                updateBuildNumber("ViaBackwards", -1);
+            }
+            if(Bukkit.getPluginManager().getPlugin("ViaRewind") == null){
+                updateBuildNumber("ViaRewind", -1);
+            }
+            if(Bukkit.getPluginManager().getPlugin("ViaRewind-Legacy-Support") == null){
+                updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
+            }
             if (isViaVersionEnabled && !isViaVersionDev) {
                 updateVia("ViaVersion", getDataFolder().getParent(), false);
             } else if (isViaVersionEnabled && isViaVersionDev) {
@@ -89,7 +102,6 @@ public final class AutoViaUpdater extends JavaPlugin {
         config.addDefault("ViaRewind.dev", false);
         config.addDefault("ViaRewind-Legacy.enabled", true);
         config.addDefault("Check-Interval", 60);
-
         config.options().copyDefaults(true);
         saveConfig();
     }

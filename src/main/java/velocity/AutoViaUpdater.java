@@ -7,6 +7,7 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
@@ -17,15 +18,20 @@ import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
 import static common.BuildYml.createYamlFile;
+import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "6.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP")
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "6.5", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
+        dependencies = {
+                @Dependency(id = "ViaVersion", optional = true),
+                @Dependency(id = "ViaBackwards", optional = true),
+                @Dependency(id = "ViaRewind", optional = true)
+        })
 public final class AutoViaUpdater {
 
     private Toml config;
@@ -76,6 +82,15 @@ public final class AutoViaUpdater {
 
     public void checkUpdateVias(){
         try {
+            if(proxy.getPluginManager().getPlugin("ViaVersion").orElse(null) == null){
+                updateBuildNumber("ViaVersion", -1);
+            }
+            if(proxy.getPluginManager().getPlugin("ViaBackwards").orElse(null) == null){
+                updateBuildNumber("ViaBackwards", -1);
+            }
+            if(proxy.getPluginManager().getPlugin("ViaRewind").orElse(null) == null){
+                updateBuildNumber("ViaRewind", -1);
+            }
             if (isViaVersionEnabled && !isViaVersionDev) {
                 updateVia("ViaVersion", dataDirectory.getParent().toString(), false);
             } else if (isViaVersionEnabled && isViaVersionDev) {

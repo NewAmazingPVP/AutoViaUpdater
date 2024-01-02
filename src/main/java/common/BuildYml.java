@@ -64,7 +64,9 @@ public class BuildYml {
             if (data.containsKey(key)) {
                 data.put(key, newBuildNumber);
                 writeYamlFile(filePath, data);
-                System.out.println(key + " build number updated to " + newBuildNumber);
+                if(newBuildNumber != -1) {
+                    System.out.println(key + " build number updated to " + newBuildNumber);
+                }
             } else {
                 System.out.println(key + " not found in the YAML file. Did you touch the doNotTouch.yml file? Regenerate it");
             }
