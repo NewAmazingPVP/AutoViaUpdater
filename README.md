@@ -10,6 +10,8 @@ Spigot Link: https://www.spigotmc.org/resources/autoviaupdater.109331/
 
 - Config.yml that allows you to specify which Vias to update and whether to use the dev version of each plugin.
 
+- /updatevias command to force update checker for all vias! (autoviaupdater.admin permission!)
+
 # Planned Features
 - If you have any suggestions or feature requests, please create a new issue in the project's GitHub repository.
 
