@@ -1,4 +1,6 @@
 # AutoViaUpdater config
+# For understanding difference between dev and normal builds visit here: https://ci.viaversion.com/
+# Default builds when enabled are normal builds, but you can explicitly make it dev builds
 
 # Check-Interval setting
 # The interval (in minutes) to check for updates
@@ -7,19 +9,19 @@ Check-Interval = 60
 [ViaVersion]
 # Enable or disable ViaVersion updates
 enabled = true
-# Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+# Enable or disable dev.
 dev = false
 
 [ViaBackwards]
 # Enable or disable ViaBackwards updates
 enabled = true
-# Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+# Enable or disable dev.
 dev = false
 
 [ViaRewind]
 # Enable or disable ViaRewind updates
 enabled = true
-# Enable or disable dev. Dev builds are generally newer and have latest bugs fixed but might not be stable
+# Enable or disable dev.
 dev = false
 
 [ViaRewind-Legacy]
