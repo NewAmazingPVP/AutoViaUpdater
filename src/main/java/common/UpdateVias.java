@@ -50,7 +50,7 @@ public class UpdateVias {
     public static void downloadUpdate(String s) throws IOException {
         String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
         
-        boolean doestUpdateFolderExist = new File(directory, File.separator + "/update").exists();
+        boolean doesUpdateFolderExist = new File(directory, File.separator + "/update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
         if (doestUpdateFolderExist)
             outputFilePath = directory + "/update/" + s + ".jar";
