@@ -52,7 +52,7 @@ public class UpdateVias {
         
         boolean doesUpdateFolderExist = new File(directory, File.separator + "/update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
-        if (doestUpdateFolderExist)
+        if (doesUpdateFolderExist)
             outputFilePath = directory + "/update/" + s + ".jar";
         
         try (InputStream in = new URL(latestVersionUrl).openStream();
