@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,7 +51,7 @@ public class UpdateVias {
     public static void downloadUpdate(String s) throws IOException {
         String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
         
-        boolean doesUpdateFolderExist = new File(directory, File.separator + "/update").exists();
+        boolean doesUpdateFolderExist = new File(directory, File.separator + "update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
         if (doesUpdateFolderExist)
             outputFilePath = directory + "/update/" + s + ".jar";
