@@ -50,7 +50,7 @@ public class UpdateVias {
 
     public static void downloadUpdate(String s) throws IOException {
         String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
-        
+
         boolean doesUpdateFolderExist = new File(directory, File.separator + "update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
         if (doesUpdateFolderExist){
@@ -59,17 +59,21 @@ public class UpdateVias {
             if (files != null) {
                 boolean containsVia = false;
                 for (File file : files) {
-                    if (file.getName().toLowerCase().contains(s.toLowerCase())) {
+                    if (file.getName().toLowerCase().contains(s.toLowerCase().replace("-dev", ""))) {
                         containsVia = true;
                         break;
                     }
+                    /*if (file.getName().toLowerCase().contains("viaversion")) {
+                        containsVia = true;
+                        break;
+                    }*/
                 }
                 if (!containsVia) {
                     outputFilePath = directory + "/update/" + s + ".jar";
                 }
             }
         }
-        
+
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
             byte[] buffer = new byte[1024];
