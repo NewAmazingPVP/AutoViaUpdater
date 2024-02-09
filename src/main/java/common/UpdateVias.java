@@ -59,7 +59,7 @@ public class UpdateVias {
             if (files != null) {
                 boolean containsVia = false;
                 for (File file : files) {
-                    if (file.getName().toLowerCase().contains(s.toLowerCase().replace("-dev", ""))) {
+                    if (file.getName().toLowerCase().contains(s.toLowerCase().replace("-dev", "").replace("%20", "-"))) {
                         containsVia = true;
                         break;
                     }
