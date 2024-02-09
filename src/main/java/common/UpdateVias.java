@@ -53,8 +53,22 @@ public class UpdateVias {
         
         boolean doesUpdateFolderExist = new File(directory, File.separator + "update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
-        if (doesUpdateFolderExist)
-            outputFilePath = directory + "/update/" + s + ".jar";
+        if (doesUpdateFolderExist){
+            File directoryFile = new File(directory);
+            File[] files = directoryFile.listFiles();
+            if (files != null) {
+                boolean containsVia = false;
+                for (File file : files) {
+                    if (file.getName().toLowerCase().contains(s.toLowerCase())) {
+                        containsVia = true;
+                        break;
+                    }
+                }
+                if (!containsVia) {
+                    outputFilePath = directory + "/update/" + s + ".jar";
+                }
+            }
+        }
         
         try (InputStream in = new URL(latestVersionUrl).openStream();
              FileOutputStream out = new FileOutputStream(outputFilePath)) {
