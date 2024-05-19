@@ -26,11 +26,11 @@ import static common.BuildYml.createYamlFile;
 import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "7.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "8.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
         dependencies = {
-                @Dependency(id = "ViaVersion", optional = true),
-                @Dependency(id = "ViaBackwards", optional = true),
-                @Dependency(id = "ViaRewind", optional = true)
+                @Dependency(id = "viaversion", optional = true),
+                @Dependency(id = "viabackwards", optional = true),
+                @Dependency(id = "viarewind", optional = true)
         })
 public final class AutoViaUpdater {
 

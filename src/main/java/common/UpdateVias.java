@@ -40,12 +40,39 @@ public class UpdateVias {
         String jenkinsUrl = "https://ci.viaversion.com/job/" + name + "/lastSuccessfulBuild/api/json";
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
-         return node.get("actions")
-                .get(3)
-                .get("buildsByBranchName")
-                .get("refs/remotes/origin/" + branch)
-                .get("buildNumber")
-                .asInt();
+
+        JsonNode actions = node.get("actions");
+        if (actions == null || !actions.isArray()) {
+            System.err.println("Error: 'actions' array is missing or not an array.");
+            return -1;
+        }
+
+        JsonNode buildsByBranchName = null;
+        for (JsonNode action : actions) {
+            if (action != null && action.has("buildsByBranchName")) {
+                buildsByBranchName = action.get("buildsByBranchName");
+                break;
+            }
+        }
+
+        if (buildsByBranchName == null) {
+            System.err.println("Error: 'buildsByBranchName' field is missing in any 'actions' element.");
+            return -1;
+        }
+
+        JsonNode branchNode = buildsByBranchName.get("refs/remotes/origin/" + branch);
+        if (branchNode == null) {
+            System.err.println("Error: Branch 'refs/remotes/origin/" + branch + "' is missing.");
+            return -1;
+        }
+
+        JsonNode buildNumberNode = branchNode.get("buildNumber");
+        if (buildNumberNode == null) {
+            System.err.println("Error: 'buildNumber' field is missing.");
+            return -1;
+        }
+
+        return buildNumberNode.asInt();
     }
 
     public static void downloadUpdate(String s) throws IOException {
