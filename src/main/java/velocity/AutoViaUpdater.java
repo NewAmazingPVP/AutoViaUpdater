@@ -77,18 +77,18 @@ public final class AutoViaUpdater {
     public void updateChecker() {
         long interval = config.getLong("Check-Interval");
 
-        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).schedule();
+        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).delay(Duration.ofMinutes(1)).schedule();
     }
 
     public void checkUpdateVias(){
         try {
-            if(proxy.getPluginManager().getPlugin("ViaVersion").orElse(null) == null){
+            if(proxy.getPluginManager().getPlugin("viaversion").orElse(null) == null){
                 updateBuildNumber("ViaVersion", -1);
             }
-            if(proxy.getPluginManager().getPlugin("ViaBackwards").orElse(null) == null){
+            if(proxy.getPluginManager().getPlugin("viabackwards").orElse(null) == null){
                 updateBuildNumber("ViaBackwards", -1);
             }
-            if(proxy.getPluginManager().getPlugin("ViaRewind").orElse(null) == null){
+            if(proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null){
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled && !isViaVersionDev) {

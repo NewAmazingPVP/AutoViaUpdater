@@ -51,7 +51,7 @@ public final class AutoViaUpdater extends Plugin {
 
         getProxy().getScheduler().schedule(this, () -> {
             getProxy().getScheduler().runAsync(this, this::checkUpdateVias);
-        }, 0L, updateInterval, TimeUnit.SECONDS);
+        }, 60L, updateInterval, TimeUnit.SECONDS);
     }
 
     private void saveDefaultConfig() {

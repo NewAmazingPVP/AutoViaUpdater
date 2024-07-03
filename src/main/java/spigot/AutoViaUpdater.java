@@ -50,7 +50,7 @@ public final class AutoViaUpdater extends JavaPlugin {
             public void run() {
                 checkUpdateVias();
             }
-        }, 0L, 20L * 60L * interval);
+        }, 1200L, 20L * 60L * interval);
     }
 
     public void checkUpdateVias(){
