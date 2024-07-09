@@ -26,3 +26,8 @@ ViaRewind-Legacy:
 # Check-Interval setting
 # The interval (in minutes) to check for updates
 Check-Interval: 60
+
+# The number of seconds to wait after the server has fully loaded before starting the update checking process.
+# Setting this value too low may cause errors.
+# If errors occur while loading vias, try setting this value to 60 seconds or higher.
+Delay: 5

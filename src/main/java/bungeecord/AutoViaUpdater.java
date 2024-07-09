@@ -47,11 +47,12 @@ public final class AutoViaUpdater extends Plugin {
 
     public void updateChecker() {
         long interval = config.getInt("Check-Interval");
+        long delay = config.getInt("Delay");
         long updateInterval = interval*60;
 
         getProxy().getScheduler().schedule(this, () -> {
             getProxy().getScheduler().runAsync(this, this::checkUpdateVias);
-        }, 60L, updateInterval, TimeUnit.SECONDS);
+        }, delay, updateInterval, TimeUnit.SECONDS);
     }
 
     private void saveDefaultConfig() {

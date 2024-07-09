@@ -26,7 +26,7 @@ import static common.BuildYml.createYamlFile;
 import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "8.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "8.5", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
         dependencies = {
                 @Dependency(id = "viaversion", optional = true),
                 @Dependency(id = "viabackwards", optional = true),
@@ -76,8 +76,8 @@ public final class AutoViaUpdater {
 
     public void updateChecker() {
         long interval = config.getLong("Check-Interval");
-
-        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).delay(Duration.ofMinutes(1)).schedule();
+        long delay = config.getLong("Delay");
+        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).delay(Duration.ofSeconds(delay)).schedule();
     }
 
     public void checkUpdateVias(){

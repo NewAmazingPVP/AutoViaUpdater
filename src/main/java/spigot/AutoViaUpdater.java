@@ -45,12 +45,13 @@ public final class AutoViaUpdater extends JavaPlugin {
     public void updateChecker() {
         config = getConfig();
         long interval = config.getInt("Check-Interval");
+        long delay = config.getInt("Delay");
         Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             @Override
             public void run() {
                 checkUpdateVias();
             }
-        }, 1200L, 20L * 60L * interval);
+        }, delay * 20L, 20L * 60L * interval);
     }
 
     public void checkUpdateVias(){
