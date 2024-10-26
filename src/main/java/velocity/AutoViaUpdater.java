@@ -108,8 +108,8 @@ public final class AutoViaUpdater {
     private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
         String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
         if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev) && config.getBoolean("AutoRestart")) {
-            proxy.sendMessage(Component.text(config.getString("AutoRestart-message")).color(NamedTextColor.AQUA));
-            proxy.getScheduler().buildTask(this, () -> proxy.shutdown()).delay(Duration.ofSeconds(config.getLong("AutoRestart-delay"))).schedule();
+            proxy.sendMessage(Component.text(config.getString("AutoRestart-Message")).color(NamedTextColor.AQUA));
+            proxy.getScheduler().buildTask(this, () -> proxy.shutdown()).delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay"))).schedule();
         }
     }
 

@@ -88,7 +88,8 @@ public final class AutoViaUpdater extends JavaPlugin {
     private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
         String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
         if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && getConfig().getBoolean("AutoRestart")) {
-            Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, getConfig().getInt("AutoRestart-delay") * 20L);
+            Bukkit.broadcastMessage(config.getString("AutoRestart-Message"));
+            Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, config.getLong("AutoRestart-Delay") * 20L);
         }
     }
 

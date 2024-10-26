@@ -104,7 +104,8 @@ public final class AutoViaUpdater extends Plugin {
     private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
         String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
         if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && config.getBoolean("AutoRestart")) {
-            getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getInt("AutoRestart-delay"), TimeUnit.SECONDS);
+            getProxy().broadcast(config.getString("AutoRestart-Message"));
+            getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
         }
     }
     public class UpdateCommand extends Command {
