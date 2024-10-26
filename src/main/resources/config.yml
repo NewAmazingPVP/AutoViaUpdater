@@ -31,3 +31,7 @@ Check-Interval: 60
 # Setting this value too low may cause errors.
 # If errors occur while loading vias, try setting this value to 60 seconds or higher.
 Delay: 5
+
+AutoRestart: false
+AutoRestart-Delay: 60
+AutoRestart-Message: '&cServer is restarting in 1 minute!'

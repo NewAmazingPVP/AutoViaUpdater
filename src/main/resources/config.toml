@@ -11,6 +11,10 @@ Check-Interval = 60
 # If errors occur while loading vias, try setting this value to 60 seconds or higher.
 Delay = 5
 
+AutoRestart = false
+AutoRestart-Delay = 60
+AutoRestart-Message = '&cServer is restarting in 1 minute!'
+
 [ViaVersion]
 # Enable or disable ViaVersion updates
 enabled = true

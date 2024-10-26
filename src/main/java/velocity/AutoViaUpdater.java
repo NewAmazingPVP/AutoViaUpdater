@@ -91,23 +91,25 @@ public final class AutoViaUpdater {
             if(proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null){
                 updateBuildNumber("ViaRewind", -1);
             }
-            if (isViaVersionEnabled && !isViaVersionDev) {
-                updateVia("ViaVersion", dataDirectory.getParent().toString(), false);
-            } else if (isViaVersionEnabled && isViaVersionDev) {
-                updateVia("ViaVersion-Dev", dataDirectory.getParent().toString(), true);
+            if (isViaVersionEnabled) {
+                updateAndRestart("ViaVersion", isViaVersionDev);
             }
-            if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                updateVia("ViaBackwards", dataDirectory.getParent().toString(), false);
-            } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                updateVia("ViaBackwards-Dev", dataDirectory.getParent().toString(), true);
+            if (isViaBackwardsEnabled) {
+                updateAndRestart("ViaBackwards", isViaBackwardsDev);
             }
-            if (isViaRewindEnabled && !isViaRewindDev) {
-                updateVia("ViaRewind", dataDirectory.getParent().toString(), false);
-            } else if (isViaRewindEnabled && isViaRewindDev) {
-                updateVia("ViaRewind-Dev", dataDirectory.getParent().toString(), true);
+            if (isViaRewindEnabled) {
+                updateAndRestart("ViaRewind", isViaRewindDev);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
+        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev) && config.getBoolean("AutoRestart")) {
+            proxy.sendMessage(Component.text(config.getString("AutoRestart-message")).color(NamedTextColor.AQUA));
+            proxy.getScheduler().buildTask(this, () -> proxy.shutdown()).delay(Duration.ofSeconds(config.getLong("AutoRestart-delay"))).schedule();
         }
     }
 

@@ -68,26 +68,27 @@ public final class AutoViaUpdater extends JavaPlugin {
             if(Bukkit.getPluginManager().getPlugin("ViaRewind-Legacy-Support") == null){
                 updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
             }
-            if (isViaVersionEnabled && !isViaVersionDev) {
-                updateVia("ViaVersion", getDataFolder().getParent(), false);
-            } else if (isViaVersionEnabled && isViaVersionDev) {
-                updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
+            if (isViaVersionEnabled) {
+                updateAndRestart("ViaVersion", isViaVersionDev);
             }
-            if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                updateVia("ViaBackwards", getDataFolder().getParent(), false);
-            } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
+            if (isViaBackwardsEnabled) {
+                updateAndRestart("ViaBackwards", isViaBackwardsDev);
             }
-            if (isViaRewindEnabled && !isViaRewindDev) {
-                updateVia("ViaRewind", getDataFolder().getParent(), false);
-            } else if (isViaRewindEnabled && isViaRewindDev) {
-                updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
+            if (isViaRewindEnabled) {
+                updateAndRestart("ViaRewind", isViaRewindDev);
             }
             if (isViaRewindLegacyEnabled) {
-                updateVia("ViaRewind%20Legacy%20Support", getDataFolder().getParent(), false);
+                updateAndRestart("ViaRewind%20Legacy%20Support", false);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
+        if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && getConfig().getBoolean("AutoRestart")) {
+            Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, getConfig().getInt("AutoRestart-delay") * 20L);
         }
     }
 

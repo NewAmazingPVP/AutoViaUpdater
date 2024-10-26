@@ -87,23 +87,24 @@ public final class AutoViaUpdater extends Plugin {
             if(getProxy().getPluginManager().getPlugin("ViaRewind") == null){
                 updateBuildNumber("ViaRewind", -1);
             }
-            if (isViaVersionEnabled && !isViaVersionDev) {
-                updateVia("ViaVersion", getDataFolder().getParent(), false);
-            } else if (isViaVersionEnabled && isViaVersionDev) {
-                updateVia("ViaVersion-Dev", getDataFolder().getParent(), true);
+            if (isViaVersionEnabled) {
+                updateAndRestart("ViaVersion", isViaVersionDev);
             }
-            if (isViaBackwardsEnabled && !isViaBackwardsDev) {
-                updateVia("ViaBackwards", getDataFolder().getParent(), false);
-            } else if (isViaBackwardsEnabled && isViaBackwardsDev) {
-                updateVia("ViaBackwards-Dev", getDataFolder().getParent(), true);
+            if (isViaBackwardsEnabled) {
+                updateAndRestart("ViaBackwards", isViaBackwardsDev);
             }
-            if (isViaRewindEnabled && !isViaRewindDev) {
-                updateVia("ViaRewind", getDataFolder().getParent(), false);
-            } else if (isViaRewindEnabled && isViaRewindDev) {
-                updateVia("ViaRewind-Dev", getDataFolder().getParent(), true);
+            if (isViaRewindEnabled) {
+                updateAndRestart("ViaRewind", isViaRewindDev);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
+        if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && config.getBoolean("AutoRestart")) {
+            getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getInt("AutoRestart-delay"), TimeUnit.SECONDS);
         }
     }
     public class UpdateCommand extends Command {

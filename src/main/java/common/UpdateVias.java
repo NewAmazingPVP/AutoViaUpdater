@@ -18,7 +18,7 @@ public class UpdateVias {
     private static String name;
     private static String directory;
     private static String branch;
-    public static void updateVia(String viaName, String dataDirectory, boolean isDev) throws IOException {
+    public static boolean updateVia(String viaName, String dataDirectory, boolean isDev) throws IOException {
         name = viaName;
         directory = dataDirectory;
         if(isDev){
@@ -30,10 +30,13 @@ public class UpdateVias {
             downloadUpdate(viaName);
             updateBuildNumber(viaName, getLatestBuild());
             System.out.println(viaName + " was downloaded for the first time. Please restart to let the plugin take in effect.");
+            return true;
         } else if(getDownloadedBuild(viaName) != getLatestBuild()){
             downloadUpdate(viaName);
             updateBuildNumber(viaName, getLatestBuild());
+            return true;
         }
+        return false;
     }
 
     public static int getLatestBuild() throws IOException {
