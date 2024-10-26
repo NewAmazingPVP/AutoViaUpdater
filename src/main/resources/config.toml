@@ -11,6 +11,10 @@ Check-Interval = 60
 # If errors occur while loading vias, try setting this value to 60 seconds or higher.
 Delay = 5
 
+# AutoRestart settings
+# AutoRestart is whether or not the server will restart after an update
+# AutoRestart-Delay is the delay in seconds before restarting
+# AutoRestart-Message is the message that will be broadcasted before restarting
 AutoRestart = false
 AutoRestart-Delay = 60
 AutoRestart-Message = '&cServer is restarting in 1 minute!'
