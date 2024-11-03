@@ -1,6 +1,7 @@
 name: AutoViaUpdater
 version: 9.0
 main: spigot.AutoViaUpdater
+api-version: 1.13
 authors:
   - NewAmazingPVP
 description: AutoViaUpdater is a Spigot/BungeeCord plugin that automates the updating of Vias like ViaVersion, ViaRewind, ViaBackwards, and ViaRewind-Legacy.
