@@ -1,12 +1,15 @@
 # AutoViaUpdater config
 # For understanding difference between dev and normal builds visit here: https://ci.viaversion.com/
 # Default builds when enabled are normal builds, but you can explicitly make it dev builds
+
 ViaVersion:
   # Enable or disable ViaVersion updates (https://ci.viaversion.com/job/ViaVersion)
   enabled: true
   # Enable or disable dev builds. (https://ci.viaversion.com/job/ViaVersion-DEV/)
   # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
+  # Enable or disable Java 8 builds (https://ci.viaversion.com/job/ViaVersion-Java8/)
+  java8build: false
 
 ViaBackwards:
   # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
@@ -14,6 +17,8 @@ ViaBackwards:
   # Enable or disable dev builds. (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-DEV/)
   # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
+  # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-Java8/)
+  java8build: false
 
 ViaRewind:
   # Enable or disable ViaRewind updates (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind/)
@@ -21,10 +26,15 @@ ViaRewind:
   # Enable or disable dev builds. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-DEV/)
   # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
+  # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-Java8/)
+  java8build: false
 
 ViaRewind-Legacy:
   # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
   enabled: true
+  # Enable or disable dev builds. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support-DEV/)
+  # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
+  dev: false
 
 # Check-Interval setting
 # The interval (in minutes) to check for updates
@@ -36,7 +46,7 @@ Check-Interval: 60
 Delay: 5
 
 # AutoRestart settings
-# AutoRestart is whether or not the server will restart after an update
+# AutoRestart is whether the server will restart after an update
 # AutoRestart-Delay is the delay in seconds before restarting
 # AutoRestart-Message is the message that will be broadcasted before restarting
 AutoRestart: false
