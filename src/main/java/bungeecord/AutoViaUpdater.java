@@ -22,11 +22,16 @@ public final class AutoViaUpdater extends Plugin {
     private Configuration config;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    public boolean isViaRewindJava8;
     public boolean isViaRewindLegacyEnabled;
+    public boolean isViaRewindLegacyDev;
+    public boolean isViaRewindLegacyJava8;
 
     @Override
     public void onEnable() {
@@ -34,13 +39,22 @@ public final class AutoViaUpdater extends Plugin {
         saveDefaultConfig();
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath(), true);
+
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8build");
+
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8build");
+
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8build");
+
         isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
+        isViaRewindLegacyDev = config.getBoolean("ViaRewind-Legacy.dev");
+
         updateChecker();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UpdateCommand());
     }
@@ -48,7 +62,7 @@ public final class AutoViaUpdater extends Plugin {
     public void updateChecker() {
         long interval = config.getInt("Check-Interval");
         long delay = config.getInt("Delay");
-        long updateInterval = interval*60;
+        long updateInterval = interval * 60;
 
         getProxy().getScheduler().schedule(this, () -> {
             getProxy().getScheduler().runAsync(this, this::checkUpdateVias);
@@ -76,7 +90,7 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
-    public void checkUpdateVias(){
+    public void checkUpdateVias() {
         try {
             if(getProxy().getPluginManager().getPlugin("ViaVersion") == null){
                 updateBuildNumber("ViaVersion", -1);
@@ -88,28 +102,28 @@ public final class AutoViaUpdater extends Plugin {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev);
+                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev);
+                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev);
+                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
-        if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && config.getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
+        if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
             getProxy().broadcast(config.getString("AutoRestart-Message"));
             getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
         }
     }
-    public class UpdateCommand extends Command {
 
+    public class UpdateCommand extends Command {
         public UpdateCommand() {
             super("updatevias", "autoviaupdater.admin");
         }
@@ -120,6 +134,4 @@ public final class AutoViaUpdater extends Plugin {
             sender.sendMessage(ChatColor.AQUA + "Update checker for vias successful!");
         }
     }
-
 }
-
