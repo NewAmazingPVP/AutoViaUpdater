@@ -15,7 +15,7 @@ public class BuildYml {
     public static String file;
 
     public static void createYamlFile(String folder, boolean isProxy) {
-        file = folder + "/doNotTouch.yml";
+        file = folder + "/versions.yml";
         Path filePath = Paths.get(file);
 
         if (!Files.exists(filePath)) {
@@ -73,7 +73,7 @@ public class BuildYml {
                     System.out.println(key + " build number updated to " + newBuildNumber);
                 }
             } else {
-                System.out.println(key + " not found in the YAML file. Did you touch the doNotTouch.yml file? Regenerate it.");
+                System.out.println(key + " not found in the YAML file. Did you touch the versions.yml file? Regenerate it.");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class BuildYml {
             if (data.containsKey(key)) {
                 return data.get(key);
             } else {
-                System.out.println(key + " not found in the YAML file. Did you touch the doNotTouch.yml file? Regenerate it.");
+                System.out.println(key + " not found in the YAML file. Did you touch the versions.yml file? Regenerate it.");
                 return -1;
             }
         } catch (IOException e) {
@@ -104,10 +104,10 @@ public class BuildYml {
             if (obj instanceof Map) {
                 return (Map<String, Integer>) obj;
             } else {
-                throw new RuntimeException("Invalid YAML file format. Expected a Map. Did you touch the doNotTouch.yml file? Regenerate it.");
+                throw new RuntimeException("Invalid YAML file format. Expected a Map. Did you touch the versions.yml file? Regenerate it.");
             }
         } catch (IOException e) {
-            throw new IOException("Error reading YAML file. Did you touch the doNotTouch.yml file? Regenerate it.", e);
+            throw new IOException("Error reading YAML file. Did you touch the versions.yml file? Regenerate it.", e);
         }
     }
 

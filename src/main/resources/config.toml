@@ -1,6 +1,7 @@
 # AutoViaUpdater config
 # For understanding difference between dev and normal builds visit here: https://ci.viaversion.com/
 # Default builds when enabled are normal builds, but you can explicitly make it dev builds
+# All of the builds here are from jenkins, if you want to use any other source use this plugin https://www.spigotmc.org/resources/autoupdateplugins.109683/
 
 # Check-Interval setting
 # The interval (in minutes) to check for updates
