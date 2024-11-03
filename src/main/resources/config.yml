@@ -2,25 +2,28 @@
 # For understanding difference between dev and normal builds visit here: https://ci.viaversion.com/
 # Default builds when enabled are normal builds, but you can explicitly make it dev builds
 ViaVersion:
-  # Enable or disable ViaVersion updates
+  # Enable or disable ViaVersion updates (https://ci.viaversion.com/job/ViaVersion)
   enabled: true
-  # Enable or disable dev builds.
+  # Enable or disable dev builds. (https://ci.viaversion.com/job/ViaVersion-DEV/)
+  # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
 
 ViaBackwards:
-  # Enable or disable ViaBackwards updates
+  # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
   enabled: true
-  # Enable or disable dev builds.
+  # Enable or disable dev builds. (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-DEV/)
+  # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
 
 ViaRewind:
-  # Enable or disable ViaRewind updates
+  # Enable or disable ViaRewind updates (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind/)
   enabled: true
-  # Enable or disable dev builds.
+  # Enable or disable dev builds. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-DEV/)
+  # Before you enable dev builds, please check when dev builds were last updated in the link, might be really outdated
   dev: false
 
 ViaRewind-Legacy:
-  # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord
+  # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
   enabled: true
 
 # Check-Interval setting
