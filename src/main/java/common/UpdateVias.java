@@ -13,44 +13,34 @@ import java.net.URL;
 import static common.BuildYml.getDownloadedBuild;
 import static common.BuildYml.updateBuildNumber;
 
+
 public class UpdateVias {
     private static String name;
     private static String directory;
     private static String branch;
-
-    public static boolean updateVia(String viaName, String dataDirectory, boolean isDev, boolean isJava8) throws IOException {
+    public static boolean updateVia(String viaName, String dataDirectory, boolean isDev) throws IOException {
         name = viaName;
         directory = dataDirectory;
-
-        if (isJava8) {
-            branch = "java8";
-        } else if (isDev) {
+        if(isDev){
             branch = "dev";
         } else {
             branch = "master";
         }
-
-        String keyName = isJava8 ? viaName + "-Java8" : (isDev ? viaName + "-Dev" : viaName);
-
-        if (getDownloadedBuild(keyName) == -1) {
-            downloadUpdate(viaName, isJava8);
-            updateBuildNumber(keyName, getLatestBuild(isJava8));
-            System.out.println(viaName + " was downloaded for the first time. Please restart to let the plugin take effect.");
+        if (getDownloadedBuild(viaName) == -1) {
+            downloadUpdate(viaName);
+            updateBuildNumber(viaName, getLatestBuild());
+            System.out.println(viaName + " was downloaded for the first time. Please restart to let the plugin take in effect.");
             return true;
-        } else if (getDownloadedBuild(keyName) != getLatestBuild(isJava8)) {
-            downloadUpdate(viaName, isJava8);
-            updateBuildNumber(keyName, getLatestBuild(isJava8));
+        } else if(getDownloadedBuild(viaName) != getLatestBuild()){
+            downloadUpdate(viaName);
+            updateBuildNumber(viaName, getLatestBuild());
             return true;
         }
         return false;
     }
 
-    public static int getLatestBuild(boolean isJava8) throws IOException {
+    public static int getLatestBuild() throws IOException {
         String jenkinsUrl = "https://ci.viaversion.com/job/" + name + "/lastSuccessfulBuild/api/json";
-        if (isJava8) {
-            jenkinsUrl = "https://ci.viaversion.com/job/" + name + "-Java8/lastSuccessfulBuild/api/json";
-        }
-
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
 
@@ -88,15 +78,12 @@ public class UpdateVias {
         return buildNumberNode.asInt();
     }
 
-    public static void downloadUpdate(String s, boolean isJava8) throws IOException {
-        String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s, isJava8);
-        if (isJava8) {
-            latestVersionUrl = "https://ci.viaversion.com/job/" + s + "-Java8/lastSuccessfulBuild/artifact/" + getLatestDownload(s, isJava8);
-        }
+    public static void downloadUpdate(String s) throws IOException {
+        String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
 
         boolean doesUpdateFolderExist = new File(directory, File.separator + "update").exists();
         String outputFilePath = directory + "/" + s + ".jar";
-        if (doesUpdateFolderExist) {
+        if (doesUpdateFolderExist){
             File directoryFile = new File(directory);
             File[] files = directoryFile.listFiles();
             if (files != null) {
@@ -124,18 +111,14 @@ public class UpdateVias {
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
-            System.out.println("New version of " + s + " downloaded. Please restart the server.");
+            System.out.println("New version of " + s + " downloaded. Please restart the server");
         } catch (IOException e) {
             System.out.println("Error downloading new version of " + s + "\n" + e);
         }
     }
 
-    public static String getLatestDownload(String s, boolean isJava8) throws IOException {
+    public static String getLatestDownload(String s) throws IOException {
         String jenkinsUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/api/json";
-        if (isJava8) {
-            jenkinsUrl = "https://ci.viaversion.com/job/" + s + "-Java8/lastSuccessfulBuild/api/json";
-        }
-
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
 
@@ -156,4 +139,5 @@ public class UpdateVias {
 
         return selectedArtifact.get("relativePath").asText();
     }
+
 }

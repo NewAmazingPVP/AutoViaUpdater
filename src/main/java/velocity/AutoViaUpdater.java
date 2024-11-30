@@ -36,26 +36,21 @@ public final class AutoViaUpdater {
 
     private Toml config;
     private ProxyServer proxy;
+    private File myFile;
     private Path dataDirectory;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
-    public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
-    public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
-    public boolean isViaRewindJava8;
-    public boolean isViaRewindLegacyEnabled;
-    public boolean isViaRewindLegacyDev;
-    public boolean isViaRewindLegacyJava8;
     private final Metrics.Factory metricsFactory;
 
     @Inject
     public AutoViaUpdater(ProxyServer proxy, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
         this.proxy = proxy;
         this.dataDirectory = dataDirectory;
-        this.config = loadConfig(dataDirectory);
+        config = loadConfig(dataDirectory);
         this.metricsFactory = metricsFactory;
     }
 
@@ -63,28 +58,18 @@ public final class AutoViaUpdater {
     public void onProxyInitialize(ProxyInitializeEvent event) {
         createYamlFile(dataDirectory.toAbsolutePath().toString(), true);
         metricsFactory.make(this, 18604);
-
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
-        isViaVersionJava8 = config.getBoolean("ViaVersion.java8build");
-
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
-        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8build");
-
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
-        isViaRewindJava8 = config.getBoolean("ViaRewind.java8build");
-
-        isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
-        isViaRewindLegacyDev = config.getBoolean("ViaRewind-Legacy.dev");
-
         updateChecker();
-
         CommandManager commandManager = proxy.getCommandManager();
         CommandMeta commandMeta = commandManager.metaBuilder("updatevias")
                 .plugin(this)
                 .build();
+
         SimpleCommand simpleCommand = new UpdateCommand();
         commandManager.register(commandMeta, simpleCommand);
     }
@@ -92,13 +77,10 @@ public final class AutoViaUpdater {
     public void updateChecker() {
         long interval = config.getLong("Check-Interval");
         long delay = config.getLong("Delay");
-        proxy.getScheduler().buildTask(this, this::checkUpdateVias)
-                .repeat(Duration.ofMinutes(interval))
-                .delay(Duration.ofSeconds(delay))
-                .schedule();
+        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).delay(Duration.ofSeconds(delay)).schedule();
     }
 
-    public void checkUpdateVias() {
+    public void checkUpdateVias(){
         try {
             if(proxy.getPluginManager().getPlugin("viaversion").orElse(null) == null){
                 updateBuildNumber("ViaVersion", -1);
@@ -110,29 +92,24 @@ public final class AutoViaUpdater {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
+                updateAndRestart("ViaVersion", isViaVersionDev);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
+                updateAndRestart("ViaBackwards", isViaBackwardsDev);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
-            }
-            if (isViaRewindLegacyEnabled) {
-                updateAndRestart("ViaRewind-Legacy", isViaRewindLegacyDev, isViaRewindLegacyJava8);
+                updateAndRestart("ViaRewind", isViaRewindDev);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
-        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
+        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev) && config.getBoolean("AutoRestart")) {
             proxy.sendMessage(Component.text(config.getString("AutoRestart-Message")).color(NamedTextColor.AQUA));
-            proxy.getScheduler().buildTask(this, proxy::shutdown)
-                    .delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay")))
-                    .schedule();
+            proxy.getScheduler().buildTask(this, () -> proxy.shutdown()).delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay"))).schedule();
         }
     }
 
@@ -163,7 +140,6 @@ public final class AutoViaUpdater {
         public boolean hasPermission(final Invocation invocation) {
             return invocation.source().hasPermission("autoviaupdater.admin");
         }
-
         @Override
         public void execute(Invocation invocation) {
             CommandSource source = invocation.source();
