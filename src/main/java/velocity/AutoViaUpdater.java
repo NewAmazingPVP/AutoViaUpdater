@@ -11,6 +11,7 @@ import com.velocitypowered.api.plugin.Dependency;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.proxy.ProxyServer;
+import common.CronScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
@@ -75,10 +76,26 @@ public final class AutoViaUpdater {
     }
 
     public void updateChecker() {
+        String cronExpression = config.getString("Cron-Expression", "");
         long interval = config.getLong("Check-Interval");
         long delay = config.getLong("Delay");
-        proxy.getScheduler().buildTask(this, this::checkUpdateVias).repeat(Duration.ofMinutes(interval)).delay(Duration.ofSeconds(delay)).schedule();
+
+        if (!cronExpression.isEmpty()) {
+            CronScheduler scheduler = new CronScheduler(cronExpression);
+            proxy.getScheduler()
+                    .buildTask(this, () -> scheduler.runIfDue(v -> checkUpdateVias()))
+                    .delay(Duration.ofSeconds(delay))
+                    .repeat(Duration.ofSeconds(1))
+                    .schedule();
+        } else {
+            proxy.getScheduler()
+                    .buildTask(this, this::checkUpdateVias)
+                    .delay(Duration.ofSeconds(delay))
+                    .repeat(Duration.ofMinutes(interval))
+                    .schedule();
+        }
     }
+
 
     public void checkUpdateVias(){
         try {

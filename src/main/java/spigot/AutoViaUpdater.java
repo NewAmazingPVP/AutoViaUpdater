@@ -1,5 +1,6 @@
 package spigot;
 
+import common.CronScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -9,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
@@ -44,14 +46,16 @@ public final class AutoViaUpdater extends JavaPlugin {
 
     public void updateChecker() {
         config = getConfig();
-        long interval = config.getInt("Check-Interval");
-        long delay = config.getInt("Delay");
-        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
-            @Override
-            public void run() {
-                checkUpdateVias();
-            }
-        }, delay * 20L, 20L * 60L * interval);
+        String cronExpression = config.getString("Cron-Expression", "");
+        long interval = config.getLong("Check-Interval");
+        long delay = config.getLong("Delay");
+
+        if (!cronExpression.isEmpty()) {
+            CronScheduler scheduler = new CronScheduler(cronExpression);
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, () -> scheduler.runIfDue(v -> checkUpdateVias()), delay * 20L, 20L);
+        } else {
+            Bukkit.getScheduler().runTaskTimerAsynchronously(this, this::checkUpdateVias, delay * 20L, 20L * 60L * interval);
+        }
     }
 
     public void checkUpdateVias(){

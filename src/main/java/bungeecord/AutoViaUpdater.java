@@ -1,5 +1,6 @@
 package bungeecord;
 
+import common.CronScheduler;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -46,14 +47,18 @@ public final class AutoViaUpdater extends Plugin {
     }
 
     public void updateChecker() {
-        long interval = config.getInt("Check-Interval");
-        long delay = config.getInt("Delay");
-        long updateInterval = interval*60;
+        String cronExpression = config.getString("Cron-Expression", "");
+        long interval = config.getLong("Check-Interval");
+        long delay = config.getLong("Delay");
 
-        getProxy().getScheduler().schedule(this, () -> {
-            getProxy().getScheduler().runAsync(this, this::checkUpdateVias);
-        }, delay, updateInterval, TimeUnit.SECONDS);
+        if (!cronExpression.isEmpty()) {
+            CronScheduler scheduler = new CronScheduler(cronExpression);
+            getProxy().getScheduler().schedule(this, () -> scheduler.runIfDue(v -> checkUpdateVias()), delay, 1, TimeUnit.SECONDS);
+        } else {
+            getProxy().getScheduler().schedule(this, this::checkUpdateVias, delay, interval * 60, TimeUnit.SECONDS);
+        }
     }
+
 
     private void saveDefaultConfig() {
         File file = new File(getDataFolder(), "config.yml");
