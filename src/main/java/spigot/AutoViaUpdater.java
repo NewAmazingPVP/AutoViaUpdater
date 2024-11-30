@@ -21,11 +21,15 @@ public final class AutoViaUpdater extends JavaPlugin {
     private FileConfiguration config;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    public boolean isViaRewindJava8;
     public boolean isViaRewindLegacyEnabled;
+    public boolean isViaRewindLegacyDev;
 
     @Override
     public void onEnable() {
@@ -35,11 +39,15 @@ public final class AutoViaUpdater extends JavaPlugin {
         createYamlFile(getDataFolder().getAbsolutePath(), false);
         isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
         isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
+        isViaVersionJava8 = getConfig().getBoolean("ViaVersion.java8");
         isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev");
+        isViaBackwardsJava8 = getConfig().getBoolean("ViaBackwards.java8");
         isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
         isViaRewindDev = getConfig().getBoolean("ViaRewind.dev");
+        isViaRewindJava8 = getConfig().getBoolean("ViaRewind.java8");
         isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
+        isViaRewindLegacyDev = getConfig().getBoolean("ViaRewind-Legacy.dev");
         updateChecker();
         getCommand("updatevias").setExecutor(new UpdateCommand());
     }

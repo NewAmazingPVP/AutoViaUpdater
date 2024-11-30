@@ -23,11 +23,13 @@ public final class AutoViaUpdater extends Plugin {
     private Configuration config;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
-    public boolean isViaRewindLegacyEnabled;
+    public boolean isViaRewindJava8;
 
     @Override
     public void onEnable() {
@@ -37,11 +39,13 @@ public final class AutoViaUpdater extends Plugin {
         createYamlFile(getDataFolder().getAbsolutePath(), true);
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8");
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
-        isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8");
         updateChecker();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UpdateCommand());
     }

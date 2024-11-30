@@ -41,10 +41,14 @@ public final class AutoViaUpdater {
     private Path dataDirectory;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    public boolean isViaRewindJava8;
+
     private final Metrics.Factory metricsFactory;
 
     @Inject
@@ -61,10 +65,13 @@ public final class AutoViaUpdater {
         metricsFactory.make(this, 18604);
         isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
         isViaVersionDev = config.getBoolean("ViaVersion.dev");
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8");
         isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
         isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8");
         isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
         isViaRewindDev = config.getBoolean("ViaRewind.dev");
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8");
         updateChecker();
         CommandManager commandManager = proxy.getCommandManager();
         CommandMeta commandMeta = commandManager.metaBuilder("updatevias")
