@@ -116,24 +116,26 @@ public final class AutoViaUpdater {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev);
+                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev);
+                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev);
+                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
-        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev) && config.getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
+        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
             proxy.sendMessage(Component.text(config.getString("AutoRestart-Message")).color(NamedTextColor.AQUA));
-            proxy.getScheduler().buildTask(this, () -> proxy.shutdown()).delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay"))).schedule();
+            proxy.getScheduler().buildTask(this, proxy::shutdown)
+                    .delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay")))
+                    .schedule();
         }
     }
 

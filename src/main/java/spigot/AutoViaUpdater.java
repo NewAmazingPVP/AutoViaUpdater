@@ -81,25 +81,25 @@ public final class AutoViaUpdater extends JavaPlugin {
                 updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev);
+                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev);
+                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev);
+                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
             }
             if (isViaRewindLegacyEnabled) {
-                updateAndRestart("ViaRewind%20Legacy%20Support", false);
+                updateAndRestart("ViaRewind%20Legacy%20Support", isViaRewindLegacyDev, false);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
-        if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && getConfig().getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
+        if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
             Bukkit.broadcastMessage(config.getString("AutoRestart-Message"));
             Bukkit.getScheduler().runTaskLater(this, Bukkit::shutdown, config.getLong("AutoRestart-Delay") * 20L);
         }

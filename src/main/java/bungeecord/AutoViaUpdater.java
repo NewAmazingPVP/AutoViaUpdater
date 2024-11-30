@@ -97,26 +97,27 @@ public final class AutoViaUpdater extends Plugin {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev);
+                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev);
+                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev);
+                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : pluginName;
-        if (updateVia(pluginKey, getDataFolder().getParent(), isDev) && config.getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
+        if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
             getProxy().broadcast(config.getString("AutoRestart-Message"));
             getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
         }
     }
+
     public class UpdateCommand extends Command {
 
         public UpdateCommand() {
