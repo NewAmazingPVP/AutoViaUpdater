@@ -49,7 +49,7 @@ public class BuildYml {
                         Map.entry("ViaRewind-Dev", -1),
                         Map.entry("ViaRewind-Java8", -1),
                         Map.entry("ViaRewind%20Legacy%20Support", -1),
-                        Map.entry("ViaRewind%20Legacy%20Support-Dev", -1)
+                        Map.entry("ViaRewind%20Legacy%20Support%20DEV", -1)
                 );
             }
 

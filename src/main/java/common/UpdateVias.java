@@ -19,23 +19,23 @@ public class UpdateVias {
     private static String branch;
 
     public static boolean updateVia(String viaName, String dataDirectory, boolean isDev, boolean isJava8) throws IOException {
-        name = viaName.replace("ViaRewind%20Legacy%20Support%20-Dev", "ViaRewind%20Legacy%20SupportDEV");
+        name = viaName.replace("ViaRewind%20Legacy%20Support-Dev", "ViaRewind%20Legacy%20Support%20DEV");
         directory = dataDirectory;
 
-        if (isDev) {
+        if (isDev && !isJava8) {
             branch = "dev";
         } else {
             branch = "master";
         }
 
-        if (getDownloadedBuild(viaName) == -1) {
-            downloadUpdate(viaName);
-            updateBuildNumber(viaName, getLatestBuild());
-            System.out.println(viaName + " was downloaded for the first time. Please restart to let the plugin take effect.");
+        if (getDownloadedBuild(name) == -1) {
+            downloadUpdate(name);
+            updateBuildNumber(name, getLatestBuild());
+            System.out.println(name + " was downloaded for the first time. Please restart to let the plugin take effect.");
             return true;
-        } else if (getDownloadedBuild(viaName) != getLatestBuild()) {
-            downloadUpdate(viaName);
-            updateBuildNumber(viaName, getLatestBuild());
+        } else if (getDownloadedBuild(name) != getLatestBuild()) {
+            downloadUpdate(name);
+            updateBuildNumber(name, getLatestBuild());
             return true;
         }
         return false;
