@@ -1,5 +1,5 @@
 name: AutoViaUpdater
-version: 9.0
+version: 9.5
 main: spigot.AutoViaUpdater
 api-version: 1.13
 # hackfix (definitely will not work as intended)
