@@ -32,7 +32,7 @@ enabled = true
 # NOTE: Before you enable dev builds, please check when dev builds were last updated in the link, MIGHT be really OUTDATED
 dev = false
 # Enable or disable Java 8 builds (https://ci.viaversion.com/job/ViaVersion-Java8/)
-java8b = false
+java8 = false
 
 [ViaBackwards]
 # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
@@ -50,7 +50,7 @@ enabled = true
 # NOTE: Before you enable dev builds, please check when dev builds were last updated in the link, MIGHT be really OUTDATED
 dev = false
 # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-Java8/)
-java8b = false
+java8 = false
 
 [ViaRewind-Legacy]
 # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
