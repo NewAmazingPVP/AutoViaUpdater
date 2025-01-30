@@ -15,7 +15,7 @@ import common.CronScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +27,7 @@ import static common.BuildYml.createYamlFile;
 import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "9.5.1", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "9.5.2", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
         dependencies = {
                 @Dependency(id = "viaversion", optional = true),
                 @Dependency(id = "viabackwards", optional = true),
