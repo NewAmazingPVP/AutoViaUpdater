@@ -1,8 +1,0 @@
-{
-  "id": "autoviaupdater",
-  "name": "AutoViaUpdater",
-  "version": "9.5.2",
-  "main": "velocity.VelocityUpdate",
-  "url": "https://www.spigotmc.org/resources/autoviaupdater.109331/",
-  "authors": "NewAmazingPVP"
-}
