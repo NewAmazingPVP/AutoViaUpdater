@@ -110,11 +110,11 @@ public final class AutoViaUpdater extends JavaPlugin {
 
         config = getConfig();
         config.addDefault("ViaVersion.enabled", true);
-        config.addDefault("ViaVersion.dev", false);
+        config.addDefault("ViaVersion.dev", true);
         config.addDefault("ViaBackwards.enabled", true);
-        config.addDefault("ViaBackwards.dev", false);
+        config.addDefault("ViaBackwards.dev", true);
         config.addDefault("ViaRewind.enabled", true);
-        config.addDefault("ViaRewind.dev", false);
+        config.addDefault("ViaRewind.dev", true);
         config.addDefault("ViaRewind-Legacy.enabled", true);
         config.addDefault("Check-Interval", 60);
         config.options().copyDefaults(true);
