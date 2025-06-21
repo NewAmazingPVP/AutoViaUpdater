@@ -29,7 +29,7 @@ AutoRestart-Message = '&cServer is restarting in 1 minute!'
 # Enable or disable ViaVersion updates (https://ci.viaversion.com/job/ViaVersion)
 enabled = true
 # Enable or disable snapshot builds from Jenkins
-dev = false
+dev = true
 # Enable or disable Java 8 builds (https://ci.viaversion.com/job/ViaVersion-Java8/)
 java8 = false
 
@@ -37,7 +37,7 @@ java8 = false
 # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
 enabled = true
 # Enable or disable snapshot builds from Jenkins
-dev = false
+dev = true
 # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-Java8/)
 java8 = false
 
@@ -45,7 +45,7 @@ java8 = false
 # Enable or disable ViaRewind updates (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind/)
 enabled = true
 # Enable or disable snapshot builds from Jenkins
-dev = false
+dev = true
 # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-Java8/)
 java8 = false
 
@@ -53,4 +53,4 @@ java8 = false
 # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
 enabled = true
 # Enable or disable snapshot builds from Jenkins
-dev = false
+dev = true
