@@ -16,133 +16,127 @@ import static common.BuildYml.updateBuildNumber;
 public class UpdateVias {
     private static String name;
     private static String directory;
-    private static String branch;
 
+    /**
+     * Update a Via* plugin.
+     *
+     * @param viaName      configured plugin name (may include "-Dev")
+     * @param dataDirectory plugins folder
+     * @param isDev        true ⇒ want snapshot (“-SNAPSHOT”) builds
+     * @param isJava8      true ⇒ use the Java-8 Jenkins job
+     */
     public static boolean updateVia(String viaName, String dataDirectory, boolean isDev, boolean isJava8) throws IOException {
-        name = viaName.replace("ViaRewind%20Legacy%20Support-Dev", "ViaRewind%20Legacy%20Support%20DEV");
+        //name = viaName.replace("ViaRewind%20Legacy%20Support-Dev", "ViaRewind%20Legacy%20Support%20DEV");
         directory = dataDirectory;
 
-        if (isDev && !isJava8) {
-            branch = "dev";
-        } else {
-            branch = "master";
+        String jobName = name.replace("-Dev", "");
+
+        int latestBuild = getLatestBuild(jobName, isDev, isJava8);
+        if (latestBuild == -1) {
+            System.err.println("AutoViaUpdater: no matching build found for " + jobName);
+            return false;
         }
 
         if (getDownloadedBuild(name) == -1) {
-            downloadUpdate(name);
-            updateBuildNumber(name, getLatestBuild());
-            System.out.println(name + " was downloaded for the first time. Please restart to let the plugin take effect.");
+            downloadUpdate(jobName, latestBuild, name);
+            updateBuildNumber(name, latestBuild);
+            System.out.println(name + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
             return true;
-        } else if (getDownloadedBuild(name) != getLatestBuild()) {
-            downloadUpdate(name);
-            updateBuildNumber(name, getLatestBuild());
+
+        } else if (getDownloadedBuild(name) != latestBuild) {
+            downloadUpdate(jobName, latestBuild, name);
+            updateBuildNumber(name, latestBuild);
             return true;
         }
+
         return false;
     }
 
-    public static int getLatestBuild() throws IOException {
-        String jenkinsUrl = "https://ci.viaversion.com/job/" + name + "/lastSuccessfulBuild/api/json";
+    private static int getLatestBuild(String jobName, boolean wantSnapshot, boolean java8) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
-
-        JsonNode actions = node.get("actions");
-        if (actions == null || !actions.isArray()) {
-            System.err.println("Error: 'actions' array is missing or not an array.");
-            return -1;
+        if (java8) {
+            String url = "https://ci.viaversion.com/job/" + jobName + "/lastSuccessfulBuild/api/json";
+            return mapper.readTree(new URL(url)).get("number").asInt();
         }
 
-        JsonNode buildsByBranchName = null;
-        for (JsonNode action : actions) {
-            if (action != null && action.has("buildsByBranchName")) {
-                buildsByBranchName = action.get("buildsByBranchName");
-                break;
-            }
-        }
+        String listUrl = "https://ci.viaversion.com/job/" + jobName + "/api/json?tree=builds[number]";
+        ArrayNode builds = (ArrayNode) mapper.readTree(new URL(listUrl)).get("builds");
+        if (builds == null) return -1;
 
-        if (buildsByBranchName == null) {
-            System.err.println("Error: 'buildsByBranchName' field is missing in any 'actions' element.");
-            return -1;
+        for (JsonNode b : builds) {
+            int num = b.get("number").asInt();
+            String file = getArtifactFileName(jobName, num);
+            if (file == null) continue;
+            boolean isSnap = file.contains("-SNAPSHOT");
+            if (wantSnapshot == isSnap) return num;
         }
-
-        // maybe its java8-build and not java8? change branch name
-        JsonNode branchNode = buildsByBranchName.get("refs/remotes/origin/" + branch);
-        if (branchNode == null) {
-            System.err.println("Error: Branch 'refs/remotes/origin/" + branch + "' is missing.");
-            return -1;
-        }
-
-        JsonNode buildNumberNode = branchNode.get("buildNumber");
-        if (buildNumberNode == null) {
-            System.err.println("Error: 'buildNumber' field is missing.");
-            return -1;
-        }
-
-        return buildNumberNode.asInt();
+        return -1;
     }
 
-    public static void downloadUpdate(String s) throws IOException {
-        String latestVersionUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/artifact/" + getLatestDownload(s);
+    private static String getArtifactFileName(String jobName, int build) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
+        ArrayNode artifacts = (ArrayNode) mapper.readTree(new URL(url)).get("artifacts");
+        if (artifacts == null) return null;
 
+        for (JsonNode art : artifacts) {
+            String file = art.get("fileName").asText();
+            if (!file.contains("sources")) return file;
+        }
+        return null;
+    }
 
-        boolean doesUpdateFolderExist = new File(directory, File.separator + "update").exists();
-        String outputFilePath = directory + "/" + s + ".jar";
-        if (doesUpdateFolderExist) {
-            File directoryFile = new File(directory);
-            File[] files = directoryFile.listFiles();
-            if (files != null) {
-                boolean containsVia = false;
-                for (File file : files) {
-                    if (!file.isDirectory() && file.getName().toLowerCase().contains(s.toLowerCase().replace("-dev", "").replace("%20", "-").replace("-java8", ""))) {
-                        containsVia = true;
-                        break;
-                    }
-                    /*if (file.getName().toLowerCase().contains("viaversion")) {
-                        containsVia = true;
-                        break;
-                    }*/
-                }
-                if (containsVia) {
-                    outputFilePath = directory + "/update/" + s + ".jar";
+    private static void downloadUpdate(String jobName, int build, String localName) throws IOException {
+        String rel = getLatestDownload(jobName, build);
+        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/artifact/" + rel;
+
+        boolean updateFolder = new File(directory, "update").exists();
+        String outPath = directory + "/" + localName + ".jar";
+
+        if (updateFolder) {
+            for (File f : new File(directory).listFiles()) {
+                if (f.isFile() &&
+                        f.getName().toLowerCase().contains(
+                                localName.toLowerCase()
+                                        .replace("-dev", "")
+                                        .replace("%20", "-")
+                                        .replace("-java8", ""))) {
+                    outPath = directory + "/update/" + localName + ".jar";
+                    break;
                 }
             }
         }
 
-        try (InputStream in = new URL(latestVersionUrl).openStream();
-             FileOutputStream out = new FileOutputStream(outputFilePath)) {
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
+        try (InputStream in = new URL(url).openStream();
+             FileOutputStream out = new FileOutputStream(outPath)) {
+
+            byte[] buf = new byte[1024];
+            int n;
+            while ((n = in.read(buf)) != -1) {
+                out.write(buf, 0, n);
             }
-            System.out.println("New version of " + s + " downloaded. Please restart the server.");
+            System.out.println("New version of " + localName + " downloaded. Please restart the server.");
+
         } catch (IOException e) {
-            System.out.println("Error downloading new version of " + s + "\n" + e);
+            System.out.println("Error downloading new version of " + localName + "\n" + e);
         }
     }
 
-    public static String getLatestDownload(String s) throws IOException {
-        String jenkinsUrl = "https://ci.viaversion.com/job/" + s + "/lastSuccessfulBuild/api/json";
+    private static String getLatestDownload(String jobName, int build) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
+        ArrayNode artifacts = (ArrayNode) mapper.readTree(new URL(url)).get("artifacts");
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode node = objectMapper.readTree(new URL(jenkinsUrl));
-
-        ArrayNode artifacts = (ArrayNode) node.get("artifacts");
-
-        JsonNode selectedArtifact = null;
-        for (JsonNode artifact : artifacts) {
-            String fileName = artifact.get("fileName").asText();
+        JsonNode selected = null;
+        for (JsonNode art : artifacts) {
+            String fileName = art.get("fileName").asText();
             if (!fileName.contains("sources")) {
-                selectedArtifact = artifact;
+                selected = art;
                 break;
             }
         }
-
-        if (selectedArtifact == null && !artifacts.isEmpty()) {
-            selectedArtifact = artifacts.get(0);
-        }
-
-        return selectedArtifact.get("relativePath").asText();
+        if (selected == null && !artifacts.isEmpty()) selected = artifacts.get(0);
+        return selected.get("relativePath").asText();
     }
 }
