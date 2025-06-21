@@ -6,9 +6,9 @@ Spigot Link: https://www.spigotmc.org/resources/autoviaupdater.109331/
 # Features
 - Compatible with Minecraft versions 1.8 and higher for both Spigot/Velocity/Bungeecord, including the latest versions.
 
-- Automatically downloads successful builds of ViaVersion, ViaBackwards, ViaRewind, and ViaRewind-Legacy-Support, as well as their dev versions, from Jenkins.
+- Automatically downloads successful builds of ViaVersion, ViaBackwards, ViaRewind, and ViaRewind-Legacy-Support from Jenkins. You can choose to use snapshot ("-SNAPSHOT") builds as well.
 
-- Config.yml that allows you to specify which Vias to update and whether to use the dev version of each plugin.
+- Config.yml that allows you to specify which Vias to update and whether to use snapshot builds for each plugin.
 
 - /updatevias command to force update checker for all vias! (autoviaupdater.admin permission!)
 
