@@ -14,7 +14,6 @@ import static common.BuildYml.getDownloadedBuild;
 import static common.BuildYml.updateBuildNumber;
 
 public class UpdateVias {
-    private static String name;
     private static String directory;
 
     /**
@@ -29,7 +28,7 @@ public class UpdateVias {
         //name = viaName.replace("ViaRewind%20Legacy%20Support-Dev", "ViaRewind%20Legacy%20Support%20DEV");
         directory = dataDirectory;
 
-        String jobName = name.replace("-Dev", "");
+        String jobName = viaName.replace("-Dev", "");
 
         int latestBuild = getLatestBuild(jobName, isDev, isJava8);
         if (latestBuild == -1) {
@@ -37,15 +36,15 @@ public class UpdateVias {
             return false;
         }
 
-        if (getDownloadedBuild(name) == -1) {
-            downloadUpdate(jobName, latestBuild, name);
-            updateBuildNumber(name, latestBuild);
-            System.out.println(name + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
+        if (getDownloadedBuild(viaName) == -1) {
+            downloadUpdate(jobName, latestBuild, viaName);
+            updateBuildNumber(viaName, latestBuild);
+            System.out.println(viaName + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
             return true;
 
-        } else if (getDownloadedBuild(name) != latestBuild) {
-            downloadUpdate(jobName, latestBuild, name);
-            updateBuildNumber(name, latestBuild);
+        } else if (getDownloadedBuild(viaName) != latestBuild) {
+            downloadUpdate(jobName, latestBuild, viaName);
+            updateBuildNumber(viaName, latestBuild);
             return true;
         }
 
