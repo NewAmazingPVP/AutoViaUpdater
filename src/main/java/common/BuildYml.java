@@ -24,33 +24,29 @@ public class BuildYml {
 
             Yaml yaml = new Yaml(options);
 
-            Map<String, Integer> initialData;
+            Map<String, Integer> initialData = new java.util.LinkedHashMap<>();
             if (isProxy) {
-                initialData = Map.ofEntries(
-                        Map.entry("ViaVersion", -1),
-                        Map.entry("ViaVersion-Dev", -1),
-                        Map.entry("ViaVersion-Java8", -1),
-                        Map.entry("ViaBackwards", -1),
-                        Map.entry("ViaBackwards-Dev", -1),
-                        Map.entry("ViaBackwards-Java8", -1),
-                        Map.entry("ViaRewind", -1),
-                        Map.entry("ViaRewind-Dev", -1),
-                        Map.entry("ViaRewind-Java8", -1)
-                );
+                initialData.put("ViaVersion", -1);
+                initialData.put("ViaVersion-Dev", -1);
+                initialData.put("ViaVersion-Java8", -1);
+                initialData.put("ViaBackwards", -1);
+                initialData.put("ViaBackwards-Dev", -1);
+                initialData.put("ViaBackwards-Java8", -1);
+                initialData.put("ViaRewind", -1);
+                initialData.put("ViaRewind-Dev", -1);
+                initialData.put("ViaRewind-Java8", -1);
             } else {
-                initialData = Map.ofEntries(
-                        Map.entry("ViaVersion", -1),
-                        Map.entry("ViaVersion-Dev", -1),
-                        Map.entry("ViaVersion-Java8", -1),
-                        Map.entry("ViaBackwards", -1),
-                        Map.entry("ViaBackwards-Dev", -1),
-                        Map.entry("ViaBackwards-Java8", -1),
-                        Map.entry("ViaRewind", -1),
-                        Map.entry("ViaRewind-Dev", -1),
-                        Map.entry("ViaRewind-Java8", -1),
-                        Map.entry("ViaRewind%20Legacy%20Support", -1),
-                        Map.entry("ViaRewind%20Legacy%20Support%20DEV", -1)
-                );
+                initialData.put("ViaVersion", -1);
+                initialData.put("ViaVersion-Dev", -1);
+                initialData.put("ViaVersion-Java8", -1);
+                initialData.put("ViaBackwards", -1);
+                initialData.put("ViaBackwards-Dev", -1);
+                initialData.put("ViaBackwards-Java8", -1);
+                initialData.put("ViaRewind", -1);
+                initialData.put("ViaRewind-Dev", -1);
+                initialData.put("ViaRewind-Java8", -1);
+                initialData.put("ViaRewind%20Legacy%20Support", -1);
+                initialData.put("ViaRewind%20Legacy%20Support%20DEV", -1);
             }
 
             try (FileWriter writer = new FileWriter(filePath.toFile())) {
