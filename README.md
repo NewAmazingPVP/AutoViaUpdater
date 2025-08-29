@@ -11,7 +11,7 @@ Highlights
 
 - Multi‑platform: Spigot, BungeeCord, Velocity.
 - Folia‑ready: safe scheduling, no legacy Bukkit thread violations.
-- Smart updates: picks Release or Snapshot builds; Java‑8 jobs supported.
+- Smart updates: grabs the latest build (or the newest non‑snapshot when snapshots are disabled); Java‑8 jobs supported.
 - Flexible scheduling: simple minute interval or UNIX cron expressions.
 - Safe restarts: optional broadcast + delayed restart on update.
 - bStats: lightweight, async metrics (opt‑out supported).
@@ -62,7 +62,7 @@ Commands & Permission
 
 How it works
 
-- Checks Jenkins for the latest matching build (Release vs Snapshot, Java‑8 when selected).
+- Checks Jenkins for the latest build, limiting to non‑snapshots only when the snapshot option is disabled (Java‑8 when selected).
 - Downloads `.jar` into the `plugins` folder. If a jar already exists, the new jar is placed in `plugins/update` to be
   picked up on next restart.
 - Tracks downloaded build numbers in `plugins/AutoViaUpdater/versions.yml` (separate keys for Release, Dev, Java8
