@@ -13,7 +13,8 @@ Keep your Via stack up‑to‑date —> automatically, safely, and on schedule.
 </div>
 
 > TL;DR
-> Drop in the jar ➜ it checks Jenkins and updates ViaVersion / ViaBackwards / ViaRewind (and ViaRewind‑Legacy on Spigot) on a schedule. Snapshots optional, DEV and Java8 jobs supported.
+> Drop in the jar ➜ it checks Jenkins and updates ViaVersion / ViaBackwards / ViaRewind (and ViaRewind‑Legacy on Spigot)
+> on a schedule. Snapshots optional, DEV and Java8 jobs supported.
 
 ---
 
@@ -25,9 +26,9 @@ Keep your Via stack up‑to‑date —> automatically, safely, and on schedule.
 * [Installation](#installation)
 * [Quick Start](#quick-start)
 * [Configuration](#configuration)
-  * [Spigot/Bungee (`config.yml`)](#spigotbungee-configyml)
-  * [Velocity (`config.toml`)](#velocity-configtoml)
-  * [Scheduling Cheat Sheet](#scheduling-cheat-sheet)
+    * [Spigot/Bungee (`config.yml`)](#spigotbungee-configyml)
+    * [Velocity (`config.toml`)](#velocity-configtoml)
+    * [Scheduling Cheat Sheet](#scheduling-cheat-sheet)
 * [Commands & Permissions](#commands--permissions)
 * [How It Works](#how-it-works)
 * [Troubleshooting & FAQ](#troubleshooting--faq)
@@ -163,13 +164,14 @@ If the cron is blank, the plugin uses `Check-Interval` (minutes) with an initial
 
 * The plugin calls the Jenkins API for each selected job.
 * Selection:
-  * Snapshot ON → newest build overall (regardless of "-SNAPSHOT").
-  * Snapshot OFF → newest non‑snapshot build.
-  * DEV/Java8 flags pick the `-DEV` / `-Java8` jobs when available.
+    * Snapshot ON → newest build overall (regardless of "-SNAPSHOT").
+    * Snapshot OFF → newest non‑snapshot build.
+    * DEV/Java8 flags pick the `-DEV` / `-Java8` jobs when available.
 * Download:
-  * New jar goes to `plugins/`. If a matching jar exists, it is staged to `plugins/update/` for a clean swap on restart.
+    * New jar goes to `plugins/`. If a matching jar exists, it is staged to `plugins/update/` for a clean swap on
+      restart.
 * Tracking:
-  * Last installed build numbers are saved in `plugins/AutoViaUpdater/versions.yml`.
+    * Last installed build numbers are saved in `plugins/AutoViaUpdater/versions.yml`.
 
 Jenkins shortcuts
 
@@ -182,7 +184,8 @@ Jenkins shortcuts
 
 * Nothing updated — Make sure the target Via plugin is installed (the updater replaces what exists).
 * Wrong channel — Check `snapshot/dev/java8` flags for the specific plugin.
-* Downloaded but not applied — Enable `AutoRestart` or restart manually. If `plugins/update` exists, jars move on restart.
+* Downloaded but not applied — Enable `AutoRestart` or restart manually. If `plugins/update` exists, jars move on
+  restart.
 * Build not found — Jenkins may be down or the job moved. Try `/updatevias` again or verify the job URL.
 
 ## Building from Source
