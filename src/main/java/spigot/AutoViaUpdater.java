@@ -45,21 +45,7 @@ public final class AutoViaUpdater extends JavaPlugin {
         new Metrics(this, 18603);
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath(), false);
-        isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
-        isViaVersionDev = getConfig().getBoolean("ViaVersion.dev", false);
-        isViaVersionSnapshot = getConfig().getBoolean("ViaVersion.snapshot", true);
-        isViaVersionJava8 = getConfig().getBoolean("ViaVersion.java8", false);
-        isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
-        isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev", false);
-        isViaBackwardsSnapshot = getConfig().getBoolean("ViaBackwards.snapshot", true);
-        isViaBackwardsJava8 = getConfig().getBoolean("ViaBackwards.java8", false);
-        isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
-        isViaRewindDev = getConfig().getBoolean("ViaRewind.dev", false);
-        isViaRewindSnapshot = getConfig().getBoolean("ViaRewind.snapshot", true);
-        isViaRewindJava8 = getConfig().getBoolean("ViaRewind.java8", false);
-        isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
-        isViaRewindLegacyDev = getConfig().getBoolean("ViaRewind-Legacy.dev", false);
-        isViaRewindLegacySnapshot = getConfig().getBoolean("ViaRewind-Legacy.snapshot", true);
+        reloadSettings();
         ThreadFactory tf = r -> {
             Thread t = new Thread(r, "AutoViaUpdater-Worker");
             t.setDaemon(true);
@@ -86,9 +72,30 @@ public final class AutoViaUpdater extends JavaPlugin {
         }
     }
 
+    private void reloadSettings() {
+        reloadConfig();
+        config = getConfig();
+        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
+        isViaVersionDev = config.getBoolean("ViaVersion.dev", false);
+        isViaVersionSnapshot = config.getBoolean("ViaVersion.snapshot", true);
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8", false);
+        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
+        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev", false);
+        isViaBackwardsSnapshot = config.getBoolean("ViaBackwards.snapshot", true);
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8", false);
+        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
+        isViaRewindDev = config.getBoolean("ViaRewind.dev", false);
+        isViaRewindSnapshot = config.getBoolean("ViaRewind.snapshot", true);
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8", false);
+        isViaRewindLegacyEnabled = config.getBoolean("ViaRewind-Legacy.enabled");
+        isViaRewindLegacyDev = config.getBoolean("ViaRewind-Legacy.dev", false);
+        isViaRewindLegacySnapshot = config.getBoolean("ViaRewind-Legacy.snapshot", true);
+    }
+
     public void checkUpdateVias() {
         if (!isChecking.compareAndSet(false, true)) return;
         try {
+            reloadSettings();
             AtomicBoolean hasVV = new AtomicBoolean(false);
             AtomicBoolean hasVB = new AtomicBoolean(false);
             AtomicBoolean hasVR = new AtomicBoolean(false);
@@ -123,8 +130,7 @@ public final class AutoViaUpdater extends JavaPlugin {
     }
 
     private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : (isJava8 ? pluginName + "-Java8" : pluginName);
-        if (updateVia(pluginKey, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
+        if (updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
             String raw = config.getString("AutoRestart-Message");
             String msg = org.bukkit.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
             SchedulerAdapter.runGlobal(this, () -> Bukkit.broadcastMessage(msg));
