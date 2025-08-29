@@ -1,13 +1,13 @@
 # AutoViaUpdater config
 # For understanding the difference between release and snapshot builds visit: https://ci.viaversion.com/
-# 'snapshot' chooses -SNAPSHOT builds when available; otherwise latest non-snapshot is used.
+# 'snapshot' chooses latest builds when available regardless if they are -SNAPSHOT or not; otherwise latest non-snapshot is used.
 # 'dev' selects the *-DEV* Jenkins job; 'java8' selects the *-Java8* job.
 # All of the builds here are from Jenkins. If you want to use any other source use this plugin: https://www.spigotmc.org/resources/autoupdateplugins.109683/
 
 ViaVersion:
   # Enable or disable ViaVersion updates (https://ci.viaversion.com/job/ViaVersion)
   enabled: true
-  # If the latest build is a "-SNAPSHOT" and this is true, download the snapshot.
+  # Download the latest build, regardless of whether it's a snapshot "-SNAPSHOT" or not.
   # Otherwise, download the latest non-snapshot build.
   snapshot: true
   # Enable or disable DEV channel builds from Jenkins (https://ci.viaversion.com/job/ViaVersion-DEV/)
@@ -18,7 +18,7 @@ ViaVersion:
 ViaBackwards:
   # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
   enabled: true
-  # If the latest build is a "-SNAPSHOT" and this is true, download the snapshot.
+  # Download the latest build, regardless of whether it's a snapshot "-SNAPSHOT" or not.
   # Otherwise, download the latest non-snapshot build.
   snapshot: true
   # Enable or disable DEV channel builds from Jenkins (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-DEV/)
@@ -29,7 +29,7 @@ ViaBackwards:
 ViaRewind:
   # Enable or disable ViaRewind updates (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind/)
   enabled: true
-  # If the latest build is a "-SNAPSHOT" and this is true, download the snapshot.
+  # Download the latest build, regardless of whether it's a snapshot "-SNAPSHOT" or not.
   # Otherwise, download the latest non-snapshot build.
   snapshot: true
   # Enable or disable DEV channel builds from Jenkins (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-DEV/)
@@ -40,7 +40,7 @@ ViaRewind:
 ViaRewind-Legacy:
   # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
   enabled: true
-  # If the latest build is a "-SNAPSHOT" and this is true, download the snapshot.
+  # Download the latest build, regardless of whether it's a snapshot "-SNAPSHOT" or not.
   # Otherwise, download the latest non-snapshot build.
   snapshot: true
   # Enable or disable DEV channel builds from Jenkins (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support%20DEV/)

@@ -21,32 +21,39 @@ public class UpdateVias {
     public static boolean updateVia(String viaName, String dataDirectory, boolean wantSnapshot, boolean isDev, boolean isJava8) throws IOException {
         directory = dataDirectory;
 
-        String jobName = viaName;
+        String jobPath;
         String buildKey = viaName;
         if (isJava8) {
-            jobName = viaName + "-Java8";
+            jobPath = "job/" + viaName + "-Java8";
             buildKey = viaName + "-Java8";
         } else if (isDev) {
-            jobName = viaName + "-DEV";
-            buildKey = viaName + "-Dev";
+            if (viaName.equals("ViaRewind%20Legacy%20Support")) {
+                jobPath = "view/ViaRewind/job/" + viaName + "%20DEV";
+                buildKey = viaName + "%20DEV";
+            } else {
+                jobPath = "job/" + viaName + "-DEV";
+                buildKey = viaName + "-Dev";
+            }
+        } else {
+            jobPath = "job/" + viaName;
         }
 
-        int latestBuild = getLatestBuild(jobName, wantSnapshot);
+        int latestBuild = getLatestBuild(jobPath, wantSnapshot);
         if (latestBuild == -1) {
-            System.err.println("AutoViaUpdater: no matching build found for " + jobName);
+            System.err.println("AutoViaUpdater: no matching build found for " + jobPath);
             return false;
         }
 
         String localFileName = buildKey.replace("%20", "-");
 
         if (getDownloadedBuild(buildKey) == -1) {
-            downloadUpdate(jobName, latestBuild, localFileName);
+            downloadUpdate(jobPath, latestBuild, localFileName);
             updateBuildNumber(buildKey, latestBuild);
             System.out.println(localFileName + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
             return true;
 
         } else if (getDownloadedBuild(buildKey) != latestBuild) {
-            downloadUpdate(jobName, latestBuild, localFileName);
+            downloadUpdate(jobPath, latestBuild, localFileName);
             updateBuildNumber(buildKey, latestBuild);
             return true;
         }
@@ -54,26 +61,24 @@ public class UpdateVias {
         return false;
     }
 
-    private static int getLatestBuild(String jobName, boolean wantSnapshot) throws IOException {
-        String listUrl = "https://ci.viaversion.com/job/" + jobName + "/api/json?tree=builds[number]";
+    private static int getLatestBuild(String jobPath, boolean wantSnapshot) throws IOException {
+        String listUrl = "https://ci.viaversion.com/" + jobPath + "/api/json?tree=builds[number]";
         ArrayNode builds = (ArrayNode) readJson(listUrl).get("builds");
         if (builds == null) return -1;
 
-        int snapshotBuild = -1;
         for (JsonNode b : builds) {
             int num = b.get("number").asInt();
-            String file = getArtifactFileName(jobName, num);
+            String file = getArtifactFileName(jobPath, num);
             if (file == null) continue;
             boolean isSnap = file.contains("-SNAPSHOT");
-            if (!wantSnapshot && !isSnap) return num;
-            if (wantSnapshot && isSnap) return num;
-            if (isSnap && snapshotBuild == -1) snapshotBuild = num;
+            if (wantSnapshot) return num;
+            if (!isSnap) return num;
         }
-        return !wantSnapshot ? snapshotBuild : -1;
+        return -1;
     }
 
-    private static String getArtifactFileName(String jobName, int build) throws IOException {
-        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
+    private static String getArtifactFileName(String jobPath, int build) throws IOException {
+        String url = "https://ci.viaversion.com/" + jobPath + "/" + build + "/api/json";
         ArrayNode artifacts = (ArrayNode) readJson(url).get("artifacts");
         if (artifacts == null) return null;
 
@@ -84,9 +89,9 @@ public class UpdateVias {
         return null;
     }
 
-    private static void downloadUpdate(String jobName, int build, String localName) throws IOException {
-        String rel = getLatestDownload(jobName, build);
-        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/artifact/" + rel;
+    private static void downloadUpdate(String jobPath, int build, String localName) throws IOException {
+        String rel = getLatestDownload(jobPath, build);
+        String url = "https://ci.viaversion.com/" + jobPath + "/" + build + "/artifact/" + rel;
 
         boolean updateFolder = new File(directory, "update").exists();
         String outPath = directory + "/" + localName + ".jar";
@@ -125,8 +130,8 @@ public class UpdateVias {
         }
     }
 
-    private static String getLatestDownload(String jobName, int build) throws IOException {
-        String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
+    private static String getLatestDownload(String jobPath, int build) throws IOException {
+        String url = "https://ci.viaversion.com/" + jobPath + "/" + build + "/api/json";
         ArrayNode artifacts = (ArrayNode) readJson(url).get("artifacts");
 
         JsonNode selected = null;
