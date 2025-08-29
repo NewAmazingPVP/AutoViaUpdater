@@ -36,7 +36,7 @@ import static common.UpdateVias.updateVia;
         })
 public final class AutoViaUpdater {
 
-    private final Toml config;
+    private Toml config;
     private final ProxyServer proxy;
     private File myFile;
     private final Path dataDirectory;
@@ -68,18 +68,7 @@ public final class AutoViaUpdater {
     public void onProxyInitialize(ProxyInitializeEvent event) {
         createYamlFile(dataDirectory.toAbsolutePath().toString(), true);
         metricsFactory.make(this, 18604);
-        isViaVersionEnabled = getTomlBoolean("ViaVersion", "enabled", true);
-        isViaVersionSnapshot = getTomlBoolean("ViaVersion", "snapshot", true);
-        isViaVersionDev = getTomlBoolean("ViaVersion", "dev", false);
-        isViaVersionJava8 = getTomlBoolean("ViaVersion", "java8", false);
-        isViaBackwardsEnabled = getTomlBoolean("ViaBackwards", "enabled", true);
-        isViaBackwardsSnapshot = getTomlBoolean("ViaBackwards", "snapshot", true);
-        isViaBackwardsDev = getTomlBoolean("ViaBackwards", "dev", false);
-        isViaBackwardsJava8 = getTomlBoolean("ViaBackwards", "java8", false);
-        isViaRewindEnabled = getTomlBoolean("ViaRewind", "enabled", true);
-        isViaRewindSnapshot = getTomlBoolean("ViaRewind", "snapshot", true);
-        isViaRewindDev = getTomlBoolean("ViaRewind", "dev", false);
-        isViaRewindJava8 = getTomlBoolean("ViaRewind", "java8", false);
+        reloadSettings();
         updateChecker();
         CommandManager commandManager = proxy.getCommandManager();
         CommandMeta commandMeta = commandManager.metaBuilder("updatevias")
@@ -112,9 +101,26 @@ public final class AutoViaUpdater {
     }
 
 
+    private void reloadSettings() {
+        config = loadConfig(dataDirectory);
+        isViaVersionEnabled = getTomlBoolean("ViaVersion", "enabled", true);
+        isViaVersionSnapshot = getTomlBoolean("ViaVersion", "snapshot", true);
+        isViaVersionDev = getTomlBoolean("ViaVersion", "dev", false);
+        isViaVersionJava8 = getTomlBoolean("ViaVersion", "java8", false);
+        isViaBackwardsEnabled = getTomlBoolean("ViaBackwards", "enabled", true);
+        isViaBackwardsSnapshot = getTomlBoolean("ViaBackwards", "snapshot", true);
+        isViaBackwardsDev = getTomlBoolean("ViaBackwards", "dev", false);
+        isViaBackwardsJava8 = getTomlBoolean("ViaBackwards", "java8", false);
+        isViaRewindEnabled = getTomlBoolean("ViaRewind", "enabled", true);
+        isViaRewindSnapshot = getTomlBoolean("ViaRewind", "snapshot", true);
+        isViaRewindDev = getTomlBoolean("ViaRewind", "dev", false);
+        isViaRewindJava8 = getTomlBoolean("ViaRewind", "java8", false);
+    }
+
     public void checkUpdateVias() {
         if (!isChecking.compareAndSet(false, true)) return;
         try {
+            reloadSettings();
             if (proxy.getPluginManager().getPlugin("viaversion").orElse(null) == null) {
                 updateBuildNumber("ViaVersion", -1);
             }
@@ -141,8 +147,7 @@ public final class AutoViaUpdater {
     }
 
     private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : (isJava8 ? pluginName + "-Java8" : pluginName);
-        if (updateVia(pluginKey, dataDirectory.getParent().toString(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
+        if (updateVia(pluginName, dataDirectory.getParent().toString(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
             String raw = config.getString("AutoRestart-Message");
             Component msg = LegacyComponentSerializer.legacyAmpersand().deserialize(raw == null ? "" : raw);
             proxy.sendMessage(msg);

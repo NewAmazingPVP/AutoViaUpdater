@@ -21,12 +21,14 @@ public class UpdateVias {
     public static boolean updateVia(String viaName, String dataDirectory, boolean wantSnapshot, boolean isDev, boolean isJava8) throws IOException {
         directory = dataDirectory;
 
-        String base = viaName;
-        String jobName = base;
-        if (isDev) {
-            jobName = base + "-DEV";
-        } else if (isJava8) {
-            jobName = base + "-Java8";
+        String jobName = viaName;
+        String buildKey = viaName;
+        if (isJava8) {
+            jobName = viaName + "-Java8";
+            buildKey = viaName + "-Java8";
+        } else if (isDev) {
+            jobName = viaName + "-DEV";
+            buildKey = viaName + "-Dev";
         }
 
         int latestBuild = getLatestBuild(jobName, wantSnapshot);
@@ -35,15 +37,17 @@ public class UpdateVias {
             return false;
         }
 
-        if (getDownloadedBuild(viaName) == -1) {
-            downloadUpdate(jobName, latestBuild, viaName);
-            updateBuildNumber(viaName, latestBuild);
-            System.out.println(viaName + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
+        String localFileName = buildKey.replace("%20", "-");
+
+        if (getDownloadedBuild(buildKey) == -1) {
+            downloadUpdate(jobName, latestBuild, localFileName);
+            updateBuildNumber(buildKey, latestBuild);
+            System.out.println(localFileName + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
             return true;
 
-        } else if (getDownloadedBuild(viaName) != latestBuild) {
-            downloadUpdate(jobName, latestBuild, viaName);
-            updateBuildNumber(viaName, latestBuild);
+        } else if (getDownloadedBuild(buildKey) != latestBuild) {
+            downloadUpdate(jobName, latestBuild, localFileName);
+            updateBuildNumber(buildKey, latestBuild);
             return true;
         }
 
@@ -55,14 +59,17 @@ public class UpdateVias {
         ArrayNode builds = (ArrayNode) readJson(listUrl).get("builds");
         if (builds == null) return -1;
 
+        int snapshotBuild = -1;
         for (JsonNode b : builds) {
             int num = b.get("number").asInt();
             String file = getArtifactFileName(jobName, num);
             if (file == null) continue;
             boolean isSnap = file.contains("-SNAPSHOT");
-            if (wantSnapshot == isSnap) return num;
+            if (!wantSnapshot && !isSnap) return num;
+            if (wantSnapshot && isSnap) return num;
+            if (isSnap && snapshotBuild == -1) snapshotBuild = num;
         }
-        return -1;
+        return !wantSnapshot ? snapshotBuild : -1;
     }
 
     private static String getArtifactFileName(String jobName, int build) throws IOException {
@@ -92,7 +99,6 @@ public class UpdateVias {
                             f.getName().toLowerCase().contains(
                                     localName.toLowerCase()
                                             .replace("-dev", "")
-                                            .replace("%20", "-")
                                             .replace("-java8", ""))) {
                         outPath = directory + "/update/" + localName + ".jar";
                         break;

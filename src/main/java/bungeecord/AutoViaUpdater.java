@@ -43,18 +43,7 @@ public final class AutoViaUpdater extends Plugin {
         saveDefaultConfig();
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath(), true);
-        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled", true);
-        isViaVersionSnapshot = config.getBoolean("ViaVersion.snapshot", true);
-        isViaVersionDev = config.getBoolean("ViaVersion.dev", false);
-        isViaVersionJava8 = config.getBoolean("ViaVersion.java8", false);
-        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled", true);
-        isViaBackwardsSnapshot = config.getBoolean("ViaBackwards.snapshot", true);
-        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev", false);
-        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8", false);
-        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled", true);
-        isViaRewindSnapshot = config.getBoolean("ViaRewind.snapshot", true);
-        isViaRewindDev = config.getBoolean("ViaRewind.dev", false);
-        isViaRewindJava8 = config.getBoolean("ViaRewind.java8", false);
+        reloadSettings();
         updateChecker();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UpdateCommand());
     }
@@ -94,9 +83,26 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
+    private void reloadSettings() {
+        loadConfiguration();
+        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled", true);
+        isViaVersionSnapshot = config.getBoolean("ViaVersion.snapshot", true);
+        isViaVersionDev = config.getBoolean("ViaVersion.dev", false);
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8", false);
+        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled", true);
+        isViaBackwardsSnapshot = config.getBoolean("ViaBackwards.snapshot", true);
+        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev", false);
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8", false);
+        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled", true);
+        isViaRewindSnapshot = config.getBoolean("ViaRewind.snapshot", true);
+        isViaRewindDev = config.getBoolean("ViaRewind.dev", false);
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8", false);
+    }
+
     public void checkUpdateVias() {
         if (!isChecking.compareAndSet(false, true)) return;
         try {
+            reloadSettings();
             if (getProxy().getPluginManager().getPlugin("ViaVersion") == null) {
                 updateBuildNumber("ViaVersion", -1);
             }
@@ -123,8 +129,7 @@ public final class AutoViaUpdater extends Plugin {
     }
 
     private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isDev ? pluginName + "-Dev" : (isJava8 ? pluginName + "-Java8" : pluginName);
-        if (updateVia(pluginKey, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
+        if (updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
             String raw = config.getString("AutoRestart-Message");
             String colored = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
             getProxy().broadcast(colored);
