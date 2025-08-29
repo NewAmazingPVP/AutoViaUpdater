@@ -1,16 +1,11 @@
-name: Build and Publish
+name: Build
 
 on:
   push:
     branches: [ "**" ]
-    tags: [ "v*", "v*.*", "v*.*.*" ]
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
-
-permissions:
-  contents: write
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "**" ]
 
 jobs:
   build:
@@ -24,44 +19,13 @@ jobs:
         with:
           distribution: temurin
           java-version: '8'
-          cache: maven
+          cache: 'maven'
 
       - name: Build with Maven
         run: mvn -B -DskipTests package
 
-      - name: Upload JAR artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AutoViaUpdater-${{ github.sha }}
-          path: |
-            target/*.jar
-          if-no-files-found: error
-
-  release:
-    needs: build
-    if: startsWith(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 8
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '8'
-          cache: maven
-
-      - name: Build with Maven
-        run: mvn -B -DskipTests package
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          files: |
-            target/*.jar
-          generate_release_notes: true
-          fail_on_unmatched_files: true
-
+          name: AutoViaUpdater-jar
+          path: target/*.jar
