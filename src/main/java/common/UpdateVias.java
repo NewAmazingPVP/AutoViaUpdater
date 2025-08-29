@@ -18,12 +18,18 @@ public class UpdateVias {
     private static String directory;
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static boolean updateVia(String viaName, String dataDirectory, boolean isDev, boolean isJava8) throws IOException {
+    public static boolean updateVia(String viaName, String dataDirectory, boolean wantSnapshot, boolean isDev, boolean isJava8) throws IOException {
         directory = dataDirectory;
 
-        String jobName = viaName.replace("-Dev", "");
+        String base = viaName;
+        String jobName = base;
+        if (isDev) {
+            jobName = base + "-DEV";
+        } else if (isJava8) {
+            jobName = base + "-Java8";
+        }
 
-        int latestBuild = getLatestBuild(jobName, isDev, isJava8);
+        int latestBuild = getLatestBuild(jobName, wantSnapshot);
         if (latestBuild == -1) {
             System.err.println("AutoViaUpdater: no matching build found for " + jobName);
             return false;
@@ -44,12 +50,7 @@ public class UpdateVias {
         return false;
     }
 
-    private static int getLatestBuild(String jobName, boolean wantSnapshot, boolean java8) throws IOException {
-        if (java8) {
-            String url = "https://ci.viaversion.com/job/" + jobName + "/lastSuccessfulBuild/api/json";
-            return readJson(url).get("number").asInt();
-        }
-
+    private static int getLatestBuild(String jobName, boolean wantSnapshot) throws IOException {
         String listUrl = "https://ci.viaversion.com/job/" + jobName + "/api/json?tree=builds[number]";
         ArrayNode builds = (ArrayNode) readJson(listUrl).get("builds");
         if (builds == null) return -1;

@@ -22,15 +22,19 @@ public final class AutoViaUpdater extends JavaPlugin {
     private FileConfiguration config;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionSnapshot;
     public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsSnapshot;
     public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    public boolean isViaRewindSnapshot;
     public boolean isViaRewindJava8;
     public boolean isViaRewindLegacyEnabled;
     public boolean isViaRewindLegacyDev;
+    public boolean isViaRewindLegacySnapshot;
     private ScheduledExecutorService executor;
     private ScheduledFuture<?> updateTask;
     private final AtomicBoolean isChecking = new AtomicBoolean(false);
@@ -42,16 +46,20 @@ public final class AutoViaUpdater extends JavaPlugin {
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath(), false);
         isViaVersionEnabled = getConfig().getBoolean("ViaVersion.enabled");
-        isViaVersionDev = getConfig().getBoolean("ViaVersion.dev");
-        isViaVersionJava8 = getConfig().getBoolean("ViaVersion.java8");
+        isViaVersionDev = getConfig().getBoolean("ViaVersion.dev", false);
+        isViaVersionSnapshot = getConfig().getBoolean("ViaVersion.snapshot", true);
+        isViaVersionJava8 = getConfig().getBoolean("ViaVersion.java8", false);
         isViaBackwardsEnabled = getConfig().getBoolean("ViaBackwards.enabled");
-        isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev");
-        isViaBackwardsJava8 = getConfig().getBoolean("ViaBackwards.java8");
+        isViaBackwardsDev = getConfig().getBoolean("ViaBackwards.dev", false);
+        isViaBackwardsSnapshot = getConfig().getBoolean("ViaBackwards.snapshot", true);
+        isViaBackwardsJava8 = getConfig().getBoolean("ViaBackwards.java8", false);
         isViaRewindEnabled = getConfig().getBoolean("ViaRewind.enabled");
-        isViaRewindDev = getConfig().getBoolean("ViaRewind.dev");
-        isViaRewindJava8 = getConfig().getBoolean("ViaRewind.java8");
+        isViaRewindDev = getConfig().getBoolean("ViaRewind.dev", false);
+        isViaRewindSnapshot = getConfig().getBoolean("ViaRewind.snapshot", true);
+        isViaRewindJava8 = getConfig().getBoolean("ViaRewind.java8", false);
         isViaRewindLegacyEnabled = getConfig().getBoolean("ViaRewind-Legacy.enabled");
-        isViaRewindLegacyDev = getConfig().getBoolean("ViaRewind-Legacy.dev");
+        isViaRewindLegacyDev = getConfig().getBoolean("ViaRewind-Legacy.dev", false);
+        isViaRewindLegacySnapshot = getConfig().getBoolean("ViaRewind-Legacy.snapshot", true);
         ThreadFactory tf = r -> {
             Thread t = new Thread(r, "AutoViaUpdater-Worker");
             t.setDaemon(true);
@@ -96,16 +104,16 @@ public final class AutoViaUpdater extends JavaPlugin {
             if (!hasVR.get()) updateBuildNumber("ViaRewind", -1);
             if (!hasVRL.get()) updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
+                updateAndRestart("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
+                updateAndRestart("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
+                updateAndRestart("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8);
             }
             if (isViaRewindLegacyEnabled) {
-                updateAndRestart("ViaRewind%20Legacy%20Support", isViaRewindLegacyDev, false);
+                updateAndRestart("ViaRewind%20Legacy%20Support", isViaRewindLegacySnapshot, isViaRewindLegacyDev, false);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,9 +122,9 @@ public final class AutoViaUpdater extends JavaPlugin {
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
-        if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : (isJava8 ? pluginName + "-Java8" : pluginName);
+        if (updateVia(pluginKey, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
             String raw = config.getString("AutoRestart-Message");
             String msg = org.bukkit.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
             SchedulerAdapter.runGlobal(this, () -> Bukkit.broadcastMessage(msg));
@@ -129,15 +137,22 @@ public final class AutoViaUpdater extends JavaPlugin {
 
         config = getConfig();
         config.addDefault("ViaVersion.enabled", true);
-        config.addDefault("ViaVersion.dev", true);
+        config.addDefault("ViaVersion.snapshot", true);
+        config.addDefault("ViaVersion.dev", false);
+        config.addDefault("ViaVersion.java8", false);
         config.addDefault("ViaBackwards.enabled", true);
-        config.addDefault("ViaBackwards.dev", true);
+        config.addDefault("ViaBackwards.snapshot", true);
+        config.addDefault("ViaBackwards.dev", false);
+        config.addDefault("ViaBackwards.java8", false);
         config.addDefault("ViaRewind.enabled", true);
-        config.addDefault("ViaRewind.dev", true);
+        config.addDefault("ViaRewind.snapshot", true);
+        config.addDefault("ViaRewind.dev", false);
+        config.addDefault("ViaRewind.java8", false);
         config.addDefault("ViaRewind-Legacy.enabled", true);
+        config.addDefault("ViaRewind-Legacy.snapshot", true);
+        config.addDefault("ViaRewind-Legacy.dev", false);
         config.addDefault("Check-Interval", 60);
         config.options().copyDefaults(true);
-        saveConfig();
     }
 
     @Override

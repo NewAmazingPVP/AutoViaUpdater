@@ -26,12 +26,15 @@ public final class AutoViaUpdater extends Plugin {
     private final java.util.concurrent.atomic.AtomicBoolean isChecking = new java.util.concurrent.atomic.AtomicBoolean(false);
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
+    public boolean isViaVersionSnapshot;
     public boolean isViaVersionJava8;
     public boolean isViaBackwardsEnabled;
     public boolean isViaBackwardsDev;
+    public boolean isViaBackwardsSnapshot;
     public boolean isViaBackwardsJava8;
     public boolean isViaRewindEnabled;
     public boolean isViaRewindDev;
+    public boolean isViaRewindSnapshot;
     public boolean isViaRewindJava8;
 
     @Override
@@ -40,15 +43,18 @@ public final class AutoViaUpdater extends Plugin {
         saveDefaultConfig();
         loadConfiguration();
         createYamlFile(getDataFolder().getAbsolutePath(), true);
-        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled");
-        isViaVersionDev = config.getBoolean("ViaVersion.dev");
-        isViaVersionJava8 = config.getBoolean("ViaVersion.java8");
-        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled");
-        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev");
-        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8");
-        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled");
-        isViaRewindDev = config.getBoolean("ViaRewind.dev");
-        isViaRewindJava8 = config.getBoolean("ViaRewind.java8");
+        isViaVersionEnabled = config.getBoolean("ViaVersion.enabled", true);
+        isViaVersionSnapshot = config.getBoolean("ViaVersion.snapshot", true);
+        isViaVersionDev = config.getBoolean("ViaVersion.dev", false);
+        isViaVersionJava8 = config.getBoolean("ViaVersion.java8", false);
+        isViaBackwardsEnabled = config.getBoolean("ViaBackwards.enabled", true);
+        isViaBackwardsSnapshot = config.getBoolean("ViaBackwards.snapshot", true);
+        isViaBackwardsDev = config.getBoolean("ViaBackwards.dev", false);
+        isViaBackwardsJava8 = config.getBoolean("ViaBackwards.java8", false);
+        isViaRewindEnabled = config.getBoolean("ViaRewind.enabled", true);
+        isViaRewindSnapshot = config.getBoolean("ViaRewind.snapshot", true);
+        isViaRewindDev = config.getBoolean("ViaRewind.dev", false);
+        isViaRewindJava8 = config.getBoolean("ViaRewind.java8", false);
         updateChecker();
         ProxyServer.getInstance().getPluginManager().registerCommand(this, new UpdateCommand());
     }
@@ -101,13 +107,13 @@ public final class AutoViaUpdater extends Plugin {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionDev, isViaVersionJava8);
+                updateAndRestart("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
             }
             if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsDev, isViaBackwardsJava8);
+                updateAndRestart("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8);
             }
             if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindDev, isViaRewindJava8);
+                updateAndRestart("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,9 +122,9 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
-        String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
-        if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
+    private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
+        String pluginKey = isDev ? pluginName + "-Dev" : (isJava8 ? pluginName + "-Java8" : pluginName);
+        if (updateVia(pluginKey, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
             String raw = config.getString("AutoRestart-Message");
             String colored = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
             getProxy().broadcast(colored);
@@ -143,4 +149,3 @@ public final class AutoViaUpdater extends Plugin {
     }
 
 }
-

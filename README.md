@@ -50,10 +50,10 @@ Global keys
 
 Per‑plugin keys
 
-- `ViaVersion.enabled`, `ViaVersion.dev`, `ViaVersion.java8`
-- `ViaBackwards.enabled`, `ViaBackwards.dev`, `ViaBackwards.java8`
-- `ViaRewind.enabled`, `ViaRewind.dev`, `ViaRewind.java8`
-- `ViaRewind-Legacy.enabled`, `ViaRewind-Legacy.dev` (Spigot only)
+- `ViaVersion.enabled`, `ViaVersion.snapshot`, `ViaVersion.dev`, `ViaVersion.java8`
+- `ViaBackwards.enabled`, `ViaBackwards.snapshot`, `ViaBackwards.dev`, `ViaBackwards.java8`
+- `ViaRewind.enabled`, `ViaRewind.snapshot`, `ViaRewind.dev`, `ViaRewind.java8`
+- `ViaRewind-Legacy.enabled`, `ViaRewind-Legacy.snapshot`, `ViaRewind-Legacy.dev` (Spigot only)
 
 Commands & Permission
 
