@@ -1,6 +1,7 @@
 # AutoViaUpdater config
 # For understanding the difference between release and snapshot builds visit: https://ci.viaversion.com/
-# When dev is enabled snapshot ("-SNAPSHOT") builds will be used. Otherwise the latest non-snapshot build is used.
+# 'snapshot' chooses -SNAPSHOT builds when available; otherwise latest non-snapshot is used.
+# 'dev' selects the *-DEV* Jenkins job; 'java8' selects the *-Java8* job.
 # All of the builds here are from Jenkins. If you want to use any other source use this plugin: https://www.spigotmc.org/resources/autoupdateplugins.109683/
 
 # Check-Interval setting
@@ -28,29 +29,35 @@ AutoRestart-Message = '&cServer is restarting in 1 minute!'
 [ViaVersion]
 # Enable or disable ViaVersion updates (https://ci.viaversion.com/job/ViaVersion)
 enabled = true
-# Enable or disable snapshot builds from Jenkins
-dev = true
+# If the latest build is a "-SNAPSHOT" and this is true, download the snapshot.
+# Otherwise, download the latest non-snapshot build.
+snapshot = true
+# Enable or disable DEV channel builds from Jenkins
+dev = false
 # Enable or disable Java 8 builds (https://ci.viaversion.com/job/ViaVersion-Java8/)
 java8 = false
 
 [ViaBackwards]
 # Enable or disable ViaBackwards updates (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards/)
 enabled = true
-# Enable or disable snapshot builds from Jenkins
-dev = true
+snapshot = true
+# Enable or disable DEV channel builds from Jenkins
+dev = false
 # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaBackwards/job/ViaBackwards-Java8/)
 java8 = false
 
 [ViaRewind]
 # Enable or disable ViaRewind updates (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind/)
 enabled = true
-# Enable or disable snapshot builds from Jenkins
-dev = true
+snapshot = true
+# Enable or disable DEV channel builds from Jenkins
+dev = false
 # Enable or disable Java 8 builds (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind-Java8/)
 java8 = false
 
 [ViaRewind-Legacy]
 # Enable or disable ViaRewind-Legacy updates. Note: Will not do anything for Bungeecord servers. (https://ci.viaversion.com/view/ViaRewind/job/ViaRewind%20Legacy%20Support/)
 enabled = true
-# Enable or disable snapshot builds from Jenkins
-dev = true
+snapshot = true
+# Enable or disable DEV channel builds from Jenkins
+dev = false
