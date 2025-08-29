@@ -7,9 +7,11 @@ import java.lang.reflect.Method;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
 public final class SchedulerAdapter {
 
-    private SchedulerAdapter() {}
+    private SchedulerAdapter() {
+    }
 
     private static Object getGlobalRegionScheduler() {
         try {
