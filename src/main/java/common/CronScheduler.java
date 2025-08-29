@@ -24,7 +24,7 @@ public class CronScheduler {
 
     public boolean shouldExecute() {
         ZonedDateTime now = ZonedDateTime.now();
-        if (nextExecution.isBefore(now)) {
+        if (!nextExecution.isAfter(now)) {
             nextExecution = calculateNextExecution();
             return true;
         }

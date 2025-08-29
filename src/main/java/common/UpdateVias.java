@@ -9,23 +9,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 import static common.BuildYml.getDownloadedBuild;
 import static common.BuildYml.updateBuildNumber;
 
 public class UpdateVias {
     private static String directory;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    /**
-     * Update a Via* plugin.
-     *
-     * @param viaName      configured plugin name (may include "-Dev")
-     * @param dataDirectory plugins folder
-     * @param isDev        true ⇒ want snapshot (“-SNAPSHOT”) builds
-     * @param isJava8      true ⇒ use the Java-8 Jenkins job
-     */
     public static boolean updateVia(String viaName, String dataDirectory, boolean isDev, boolean isJava8) throws IOException {
-        //name = viaName.replace("ViaRewind%20Legacy%20Support-Dev", "ViaRewind%20Legacy%20Support%20DEV");
         directory = dataDirectory;
 
         String jobName = viaName.replace("-Dev", "");
@@ -52,15 +45,13 @@ public class UpdateVias {
     }
 
     private static int getLatestBuild(String jobName, boolean wantSnapshot, boolean java8) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
-
         if (java8) {
             String url = "https://ci.viaversion.com/job/" + jobName + "/lastSuccessfulBuild/api/json";
-            return mapper.readTree(new URL(url)).get("number").asInt();
+            return readJson(url).get("number").asInt();
         }
 
         String listUrl = "https://ci.viaversion.com/job/" + jobName + "/api/json?tree=builds[number]";
-        ArrayNode builds = (ArrayNode) mapper.readTree(new URL(listUrl)).get("builds");
+        ArrayNode builds = (ArrayNode) readJson(listUrl).get("builds");
         if (builds == null) return -1;
 
         for (JsonNode b : builds) {
@@ -74,9 +65,8 @@ public class UpdateVias {
     }
 
     private static String getArtifactFileName(String jobName, int build) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
-        ArrayNode artifacts = (ArrayNode) mapper.readTree(new URL(url)).get("artifacts");
+        ArrayNode artifacts = (ArrayNode) readJson(url).get("artifacts");
         if (artifacts == null) return null;
 
         for (JsonNode art : artifacts) {
@@ -94,20 +84,26 @@ public class UpdateVias {
         String outPath = directory + "/" + localName + ".jar";
 
         if (updateFolder) {
-            for (File f : new File(directory).listFiles()) {
-                if (f.isFile() &&
-                        f.getName().toLowerCase().contains(
-                                localName.toLowerCase()
-                                        .replace("-dev", "")
-                                        .replace("%20", "-")
-                                        .replace("-java8", ""))) {
-                    outPath = directory + "/update/" + localName + ".jar";
-                    break;
+            File[] files = new File(directory).listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    if (f.isFile() &&
+                            f.getName().toLowerCase().contains(
+                                    localName.toLowerCase()
+                                            .replace("-dev", "")
+                                            .replace("%20", "-")
+                                            .replace("-java8", ""))) {
+                        outPath = directory + "/update/" + localName + ".jar";
+                        break;
+                    }
                 }
             }
         }
 
-        try (InputStream in = new URL(url).openStream();
+        URLConnection conn = new URL(url).openConnection();
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(30000);
+        try (InputStream in = conn.getInputStream();
              FileOutputStream out = new FileOutputStream(outPath)) {
 
             byte[] buf = new byte[1024];
@@ -123,9 +119,8 @@ public class UpdateVias {
     }
 
     private static String getLatestDownload(String jobName, int build) throws IOException {
-        ObjectMapper mapper = new ObjectMapper();
         String url = "https://ci.viaversion.com/job/" + jobName + "/" + build + "/api/json";
-        ArrayNode artifacts = (ArrayNode) mapper.readTree(new URL(url)).get("artifacts");
+        ArrayNode artifacts = (ArrayNode) readJson(url).get("artifacts");
 
         JsonNode selected = null;
         for (JsonNode art : artifacts) {
@@ -137,5 +132,14 @@ public class UpdateVias {
         }
         if (selected == null && !artifacts.isEmpty()) selected = artifacts.get(0);
         return selected.get("relativePath").asText();
+    }
+
+    private static JsonNode readJson(String url) throws IOException {
+        URLConnection conn = new URL(url).openConnection();
+        conn.setConnectTimeout(10000);
+        conn.setReadTimeout(30000);
+        try (InputStream in = conn.getInputStream()) {
+            return MAPPER.readTree(in);
+        }
     }
 }

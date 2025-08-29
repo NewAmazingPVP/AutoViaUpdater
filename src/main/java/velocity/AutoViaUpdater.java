@@ -1,5 +1,6 @@
 package velocity;
 
+import com.google.inject.Inject;
 import com.moandjiezana.toml.Toml;
 import com.velocitypowered.api.command.CommandManager;
 import com.velocitypowered.api.command.CommandMeta;
@@ -8,14 +9,14 @@ import com.velocitypowered.api.command.SimpleCommand;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Dependency;
-import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.plugin.Plugin;
+import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import common.CronScheduler;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-import com.google.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +28,7 @@ import static common.BuildYml.createYamlFile;
 import static common.BuildYml.updateBuildNumber;
 import static common.UpdateVias.updateVia;
 
-@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "9.5.2", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
+@Plugin(id = "autoviaupdater", name = "AutoViaUpdater", version = "10.0.0", url = "https://www.spigotmc.org/resources/autoviaupdater.109331/", authors = "NewAmazingPVP",
         dependencies = {
                 @Dependency(id = "viaversion", optional = true),
                 @Dependency(id = "viabackwards", optional = true),
@@ -35,10 +36,10 @@ import static common.UpdateVias.updateVia;
         })
 public final class AutoViaUpdater {
 
-    private Toml config;
-    private ProxyServer proxy;
+    private final Toml config;
+    private final ProxyServer proxy;
     private File myFile;
-    private Path dataDirectory;
+    private final Path dataDirectory;
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
     public boolean isViaVersionJava8;
@@ -50,6 +51,7 @@ public final class AutoViaUpdater {
     public boolean isViaRewindJava8;
 
     private final Metrics.Factory metricsFactory;
+    private final java.util.concurrent.atomic.AtomicBoolean isChecking = new java.util.concurrent.atomic.AtomicBoolean(false);
 
     @Inject
     public AutoViaUpdater(ProxyServer proxy, @DataDirectory Path dataDirectory, Metrics.Factory metricsFactory) {
@@ -104,15 +106,16 @@ public final class AutoViaUpdater {
     }
 
 
-    public void checkUpdateVias(){
+    public void checkUpdateVias() {
+        if (!isChecking.compareAndSet(false, true)) return;
         try {
-            if(proxy.getPluginManager().getPlugin("viaversion").orElse(null) == null){
+            if (proxy.getPluginManager().getPlugin("viaversion").orElse(null) == null) {
                 updateBuildNumber("ViaVersion", -1);
             }
-            if(proxy.getPluginManager().getPlugin("viabackwards").orElse(null) == null){
+            if (proxy.getPluginManager().getPlugin("viabackwards").orElse(null) == null) {
                 updateBuildNumber("ViaBackwards", -1);
             }
-            if(proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null){
+            if (proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null) {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
@@ -126,13 +129,17 @@ public final class AutoViaUpdater {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            isChecking.set(false);
         }
     }
 
     private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
         String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
         if (updateVia(pluginKey, dataDirectory.getParent().toString(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
-            proxy.sendMessage(Component.text(config.getString("AutoRestart-Message")).color(NamedTextColor.AQUA));
+            String raw = config.getString("AutoRestart-Message");
+            Component msg = LegacyComponentSerializer.legacyAmpersand().deserialize(raw == null ? "" : raw);
+            proxy.sendMessage(msg);
             proxy.getScheduler().buildTask(this, proxy::shutdown)
                     .delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay")))
                     .schedule();
@@ -166,11 +173,15 @@ public final class AutoViaUpdater {
         public boolean hasPermission(final Invocation invocation) {
             return invocation.source().hasPermission("autoviaupdater.admin");
         }
+
         @Override
         public void execute(Invocation invocation) {
             CommandSource source = invocation.source();
-            checkUpdateVias();
-            source.sendMessage(Component.text("Update checker for vias successful!").color(NamedTextColor.AQUA));
+            source.sendMessage(Component.text("Checking for Via updates...").color(NamedTextColor.YELLOW));
+            proxy.getScheduler().buildTask(AutoViaUpdater.this, () -> {
+                checkUpdateVias();
+                source.sendMessage(Component.text("Update checker for vias completed!").color(NamedTextColor.AQUA));
+            }).schedule();
         }
     }
 }
