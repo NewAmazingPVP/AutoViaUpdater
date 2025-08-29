@@ -10,7 +10,9 @@ import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.concurrent.TimeUnit;
 
@@ -21,6 +23,7 @@ import static common.UpdateVias.updateVia;
 public final class AutoViaUpdater extends Plugin {
 
     private Configuration config;
+    private final java.util.concurrent.atomic.AtomicBoolean isChecking = new java.util.concurrent.atomic.AtomicBoolean(false);
     public boolean isViaVersionEnabled;
     public boolean isViaVersionDev;
     public boolean isViaVersionJava8;
@@ -85,15 +88,16 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
-    public void checkUpdateVias(){
+    public void checkUpdateVias() {
+        if (!isChecking.compareAndSet(false, true)) return;
         try {
-            if(getProxy().getPluginManager().getPlugin("ViaVersion") == null){
+            if (getProxy().getPluginManager().getPlugin("ViaVersion") == null) {
                 updateBuildNumber("ViaVersion", -1);
             }
-            if(getProxy().getPluginManager().getPlugin("ViaBackwards") == null){
+            if (getProxy().getPluginManager().getPlugin("ViaBackwards") == null) {
                 updateBuildNumber("ViaBackwards", -1);
             }
-            if(getProxy().getPluginManager().getPlugin("ViaRewind") == null){
+            if (getProxy().getPluginManager().getPlugin("ViaRewind") == null) {
                 updateBuildNumber("ViaRewind", -1);
             }
             if (isViaVersionEnabled) {
@@ -107,13 +111,17 @@ public final class AutoViaUpdater extends Plugin {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            isChecking.set(false);
         }
     }
 
     private void updateAndRestart(String pluginName, boolean isDev, boolean isJava8) throws IOException {
         String pluginKey = isJava8 ? pluginName + "-Java8" : (isDev ? pluginName + "-Dev" : pluginName);
         if (updateVia(pluginKey, getDataFolder().getParent(), isDev, isJava8) && config.getBoolean("AutoRestart")) {
-            getProxy().broadcast(config.getString("AutoRestart-Message"));
+            String raw = config.getString("AutoRestart-Message");
+            String colored = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
+            getProxy().broadcast(colored);
             getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
         }
     }
@@ -126,8 +134,11 @@ public final class AutoViaUpdater extends Plugin {
 
         @Override
         public void execute(CommandSender sender, String[] args) {
-            checkUpdateVias();
-            sender.sendMessage(ChatColor.AQUA + "Update checker for vias successful!");
+            sender.sendMessage(ChatColor.YELLOW + "Checking for Via updates...");
+            getProxy().getScheduler().runAsync(AutoViaUpdater.this, () -> {
+                checkUpdateVias();
+                sender.sendMessage(ChatColor.AQUA + "Update checker for vias completed!");
+            });
         }
     }
 
