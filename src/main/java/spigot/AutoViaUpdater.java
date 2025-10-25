@@ -110,17 +110,24 @@ public final class AutoViaUpdater extends JavaPlugin {
             if (!hasVB.get()) updateBuildNumber("ViaBackwards", -1);
             if (!hasVR.get()) updateBuildNumber("ViaRewind", -1);
             if (!hasVRL.get()) updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
-            if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
+            boolean shouldRestart = false;
+            if (isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8)) {
+                shouldRestart = true;
             }
-            if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8);
+            if (isViaBackwardsEnabled && updatePlugin("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8)) {
+                shouldRestart = true;
             }
-            if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8);
+            if (isViaRewindEnabled && updatePlugin("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8)) {
+                shouldRestart = true;
             }
-            if (isViaRewindLegacyEnabled) {
-                updateAndRestart("ViaRewind%20Legacy%20Support", isViaRewindLegacySnapshot, isViaRewindLegacyDev, false);
+            if (isViaRewindLegacyEnabled && updatePlugin("ViaRewind%20Legacy%20Support", isViaRewindLegacySnapshot, isViaRewindLegacyDev, false)) {
+                shouldRestart = true;
+            }
+            if (shouldRestart && config.getBoolean("AutoRestart")) {
+                String raw = config.getString("AutoRestart-Message");
+                String msg = org.bukkit.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
+                SchedulerAdapter.runGlobal(this, () -> Bukkit.broadcastMessage(msg));
+                SchedulerAdapter.runGlobalDelayed(this, Bukkit::shutdown, config.getLong("AutoRestart-Delay") * 20L);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,13 +136,8 @@ public final class AutoViaUpdater extends JavaPlugin {
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        if (updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && getConfig().getBoolean("AutoRestart")) {
-            String raw = config.getString("AutoRestart-Message");
-            String msg = org.bukkit.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
-            SchedulerAdapter.runGlobal(this, () -> Bukkit.broadcastMessage(msg));
-            SchedulerAdapter.runGlobalDelayed(this, Bukkit::shutdown, config.getLong("AutoRestart-Delay") * 20L);
-        }
+    private boolean updatePlugin(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
+        return updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8);
     }
 
     public void loadConfiguration() {

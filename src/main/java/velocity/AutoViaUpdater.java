@@ -130,14 +130,23 @@ public final class AutoViaUpdater {
             if (proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null) {
                 updateBuildNumber("ViaRewind", -1);
             }
-            if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
+            boolean shouldRestart = false;
+            if (isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8)) {
+                shouldRestart = true;
             }
-            if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8);
+            if (isViaBackwardsEnabled && updatePlugin("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8)) {
+                shouldRestart = true;
             }
-            if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8);
+            if (isViaRewindEnabled && updatePlugin("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8)) {
+                shouldRestart = true;
+            }
+            if (shouldRestart && config.getBoolean("AutoRestart")) {
+                String raw = config.getString("AutoRestart-Message");
+                Component msg = LegacyComponentSerializer.legacyAmpersand().deserialize(raw == null ? "" : raw);
+                proxy.sendMessage(msg);
+                proxy.getScheduler().buildTask(this, proxy::shutdown)
+                        .delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay")))
+                        .schedule();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -146,15 +155,8 @@ public final class AutoViaUpdater {
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        if (updateVia(pluginName, dataDirectory.getParent().toString(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
-            String raw = config.getString("AutoRestart-Message");
-            Component msg = LegacyComponentSerializer.legacyAmpersand().deserialize(raw == null ? "" : raw);
-            proxy.sendMessage(msg);
-            proxy.getScheduler().buildTask(this, proxy::shutdown)
-                    .delay(Duration.ofSeconds(config.getLong("AutoRestart-Delay")))
-                    .schedule();
-        }
+    private boolean updatePlugin(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
+        return updateVia(pluginName, dataDirectory.getParent().toString(), isSnapshot, isDev, isJava8);
     }
 
     private Toml loadConfig(Path path) {

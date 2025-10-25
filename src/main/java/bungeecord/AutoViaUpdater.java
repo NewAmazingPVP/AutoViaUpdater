@@ -112,14 +112,21 @@ public final class AutoViaUpdater extends Plugin {
             if (getProxy().getPluginManager().getPlugin("ViaRewind") == null) {
                 updateBuildNumber("ViaRewind", -1);
             }
-            if (isViaVersionEnabled) {
-                updateAndRestart("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
+            boolean shouldRestart = false;
+            if (isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8)) {
+                shouldRestart = true;
             }
-            if (isViaBackwardsEnabled) {
-                updateAndRestart("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8);
+            if (isViaBackwardsEnabled && updatePlugin("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8)) {
+                shouldRestart = true;
             }
-            if (isViaRewindEnabled) {
-                updateAndRestart("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8);
+            if (isViaRewindEnabled && updatePlugin("ViaRewind", isViaRewindSnapshot, isViaRewindDev, isViaRewindJava8)) {
+                shouldRestart = true;
+            }
+            if (shouldRestart && config.getBoolean("AutoRestart")) {
+                String raw = config.getString("AutoRestart-Message");
+                String colored = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
+                getProxy().broadcast(colored);
+                getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -128,13 +135,8 @@ public final class AutoViaUpdater extends Plugin {
         }
     }
 
-    private void updateAndRestart(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
-        if (updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8) && config.getBoolean("AutoRestart")) {
-            String raw = config.getString("AutoRestart-Message");
-            String colored = net.md_5.bungee.api.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
-            getProxy().broadcast(colored);
-            getProxy().getScheduler().schedule(this, () -> getProxy().stop(), config.getLong("AutoRestart-Delay"), TimeUnit.SECONDS);
-        }
+    private boolean updatePlugin(String pluginName, boolean isSnapshot, boolean isDev, boolean isJava8) throws IOException {
+        return updateVia(pluginName, getDataFolder().getParent(), isSnapshot, isDev, isJava8);
     }
 
     public class UpdateCommand extends Command {
