@@ -2,7 +2,7 @@
 
 # AutoViaUpdater v10.1.0
 
-Keep your Via stack up‑to‑date —> automatically, safely, and on schedule.
+Keep your Via stack up‑to‑date -> automatically, safely, and on schedule.
 
 ![Platforms](https://img.shields.io/badge/Platforms-Spigot%20%7C%20Paper%20%7C%20Folia%20%7C%20Velocity%20%7C%20BungeeCord-5A67D8)
 ![MC](https://img.shields.io/badge/Minecraft-1.8%E2%86%92Latest-2EA043)
@@ -156,7 +156,7 @@ If the cron is blank, the plugin uses `Check-Interval` (minutes) with an initial
 
 ## Commands & Permissions
 
-* `/updatevias` — triggers an immediate check
+* `/updatevias` - triggers an immediate check
 * Permission: `autoviaupdater.admin` (required on Velocity/Bungee; OP on Spigot by default)
 
 ## How It Works
@@ -181,11 +181,11 @@ Jenkins shortcuts
 
 ## Troubleshooting & FAQ
 
-* Nothing updated — Make sure the target Via plugin is installed (the updater replaces what exists).
-* Wrong channel — Check `snapshot/dev/java8` flags for the specific plugin.
-* Downloaded but not applied — Enable `AutoRestart` or restart manually. If `plugins/update` exists, jars move on
+* Nothing updated - Make sure the target Via plugin is installed (the updater replaces what exists).
+* Wrong channel - Check `snapshot/dev/java8` flags for the specific plugin.
+* Downloaded but not applied - Enable `AutoRestart` or restart manually. If `plugins/update` exists, jars move on
   restart.
-* Build not found — Jenkins may be down or the job moved. Try `/updatevias` again or verify the job URL.
+* Build not found - Jenkins may be down or the job moved. Try `/updatevias` again or verify the job URL.
 
 ## Building from Source
 

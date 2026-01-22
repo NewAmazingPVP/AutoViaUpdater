@@ -110,10 +110,7 @@ public final class AutoViaUpdater extends JavaPlugin {
             if (!hasVB.get()) updateBuildNumber("ViaBackwards", -1);
             if (!hasVR.get()) updateBuildNumber("ViaRewind", -1);
             if (!hasVRL.get()) updateBuildNumber("ViaRewind%20Legacy%20Support", -1);
-            boolean shouldRestart = false;
-            if (isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8)) {
-                shouldRestart = true;
-            }
+            boolean shouldRestart = isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
             if (isViaBackwardsEnabled && updatePlugin("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8)) {
                 shouldRestart = true;
             }

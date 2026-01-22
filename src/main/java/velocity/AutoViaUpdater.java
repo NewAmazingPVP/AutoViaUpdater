@@ -130,10 +130,7 @@ public final class AutoViaUpdater {
             if (proxy.getPluginManager().getPlugin("viarewind").orElse(null) == null) {
                 updateBuildNumber("ViaRewind", -1);
             }
-            boolean shouldRestart = false;
-            if (isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8)) {
-                shouldRestart = true;
-            }
+            boolean shouldRestart = isViaVersionEnabled && updatePlugin("ViaVersion", isViaVersionSnapshot, isViaVersionDev, isViaVersionJava8);
             if (isViaBackwardsEnabled && updatePlugin("ViaBackwards", isViaBackwardsSnapshot, isViaBackwardsDev, isViaBackwardsJava8)) {
                 shouldRestart = true;
             }
