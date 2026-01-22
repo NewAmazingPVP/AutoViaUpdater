@@ -1,10 +1,9 @@
 <div align="center">
 
-# AutoViaUpdater v10.0.0
+# AutoViaUpdater v10.1.0
 
 Keep your Via stack up‑to‑date —> automatically, safely, and on schedule.
 
-[![SpigotMC](https://img.shields.io/badge/SpigotMC-Resource-orange)](https://www.spigotmc.org/resources/autoviaupdater.109331/)
 ![Platforms](https://img.shields.io/badge/Platforms-Spigot%20%7C%20Paper%20%7C%20Folia%20%7C%20Velocity%20%7C%20BungeeCord-5A67D8)
 ![MC](https://img.shields.io/badge/Minecraft-1.8%E2%86%92Latest-2EA043)
 ![Java](https://img.shields.io/badge/Java-8%2B-1F6FEB)

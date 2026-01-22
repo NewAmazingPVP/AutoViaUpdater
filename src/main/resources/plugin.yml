@@ -1,5 +1,5 @@
 name: AutoViaUpdater
-version: 10.0.0
+version: 10.0.1
 main: spigot.AutoViaUpdater
 api-version: 1.13
 folia-supported: true
