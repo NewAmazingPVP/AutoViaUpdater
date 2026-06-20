@@ -1,6 +1,7 @@
 package spigot;
 
 import common.CronScheduler;
+import common.RealTimeRestartScheduler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -37,6 +38,7 @@ public final class AutoViaUpdater extends JavaPlugin {
     public boolean isViaRewindLegacySnapshot;
     private ScheduledExecutorService executor;
     private ScheduledFuture<?> updateTask;
+    private RealTimeRestartScheduler restartScheduler;
     private final AtomicBoolean isChecking = new AtomicBoolean(false);
 
     @Override
@@ -52,6 +54,7 @@ public final class AutoViaUpdater extends JavaPlugin {
             return t;
         };
         executor = Executors.newSingleThreadScheduledExecutor(tf);
+        restartScheduler = new RealTimeRestartScheduler(executor);
         updateChecker();
         getCommand("updatevias").setExecutor(new UpdateCommand());
     }
@@ -124,7 +127,7 @@ public final class AutoViaUpdater extends JavaPlugin {
                 String raw = config.getString("AutoRestart-Message");
                 String msg = org.bukkit.ChatColor.translateAlternateColorCodes('&', raw == null ? "" : raw);
                 SchedulerAdapter.runGlobal(this, () -> Bukkit.broadcastMessage(msg));
-                SchedulerAdapter.runGlobalDelayed(this, Bukkit::shutdown, config.getLong("AutoRestart-Delay") * 20L);
+                restartScheduler.scheduleRestart(Bukkit::shutdown, config.getLong("AutoRestart-Delay"));
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -165,6 +168,10 @@ public final class AutoViaUpdater extends JavaPlugin {
         if (updateTask != null) {
             updateTask.cancel(false);
             updateTask = null;
+        }
+        if (restartScheduler != null) {
+            restartScheduler.cancelPendingRestart();
+            restartScheduler = null;
         }
         if (executor != null) {
             executor.shutdownNow();
