@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import static common.BuildYml.getDownloadedBuild;
 import static common.BuildYml.updateBuildNumber;
@@ -112,11 +114,18 @@ public class UpdateVias {
             }
         }
 
+        // Download to a temporary file first, then atomically move to the target
+        // path. This prevents plugin corruption if the server restarts or crashes
+        // during the download.
+        String tempPath = outPath + ".tmp";
+        File tempFile = new File(tempPath);
+        File targetFile = new File(outPath);
+
         URLConnection conn = new URL(url).openConnection();
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(30000);
         try (InputStream in = conn.getInputStream();
-             FileOutputStream out = new FileOutputStream(outPath)) {
+             FileOutputStream out = new FileOutputStream(tempFile)) {
 
             byte[] buf = new byte[1024];
             int n;
@@ -127,7 +136,12 @@ public class UpdateVias {
 
         } catch (IOException e) {
             System.out.println("Error downloading new version of " + localName + "\n" + e);
+            tempFile.delete();
+            return;
         }
+
+        // Atomically replace the old plugin with the newly downloaded file
+        Files.move(tempFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 
     private static String getLatestDownload(String jobPath, int build) throws IOException {
