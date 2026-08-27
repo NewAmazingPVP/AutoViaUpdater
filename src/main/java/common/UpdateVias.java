@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import static common.BuildYml.getDownloadedBuild;
 import static common.BuildYml.updateBuildNumber;
@@ -19,6 +23,10 @@ import static common.BuildYml.updateBuildNumber;
 public class UpdateVias {
     private static String directory;
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    interface DownloadAction {
+        void download() throws IOException;
+    }
 
     public static boolean updateVia(String viaName, String dataDirectory, boolean wantSnapshot, boolean isDev, boolean isJava8) throws IOException {
         directory = dataDirectory;
@@ -48,19 +56,25 @@ public class UpdateVias {
 
         String localFileName = buildKey.replace("%20", "-");
 
-        if (getDownloadedBuild(buildKey) == -1) {
-            downloadUpdate(jobPath, latestBuild, localFileName);
-            updateBuildNumber(buildKey, latestBuild);
+        int downloadedBuild = getDownloadedBuild(buildKey);
+        if (downloadedBuild == -1) {
+            downloadAndRecordBuild(buildKey, latestBuild,
+                    () -> downloadUpdate(jobPath, latestBuild, localFileName));
             System.out.println(localFileName + " was downloaded for the first time. " + "Please restart to let the plugin take effect.");
             return true;
 
-        } else if (getDownloadedBuild(buildKey) != latestBuild) {
-            downloadUpdate(jobPath, latestBuild, localFileName);
-            updateBuildNumber(buildKey, latestBuild);
+        } else if (downloadedBuild != latestBuild) {
+            downloadAndRecordBuild(buildKey, latestBuild,
+                    () -> downloadUpdate(jobPath, latestBuild, localFileName));
             return true;
         }
 
         return false;
+    }
+
+    static void downloadAndRecordBuild(String buildKey, int build, DownloadAction download) throws IOException {
+        download.download();
+        updateBuildNumber(buildKey, build);
     }
 
     private static int getLatestBuild(String jobPath, boolean wantSnapshot) throws IOException {
@@ -114,34 +128,55 @@ public class UpdateVias {
             }
         }
 
-        // Download to a temporary file first, then atomically move to the target
-        // path. This prevents plugin corruption if the server restarts or crashes
-        // during the download.
-        String tempPath = outPath + ".tmp";
-        File tempFile = new File(tempPath);
-        File targetFile = new File(outPath);
+        downloadToTarget(new URL(url), Paths.get(outPath));
+        System.out.println("New version of " + localName + " downloaded. Please restart the server.");
+    }
 
-        URLConnection conn = new URL(url).openConnection();
-        conn.setConnectTimeout(10000);
-        conn.setReadTimeout(30000);
-        try (InputStream in = conn.getInputStream();
-             FileOutputStream out = new FileOutputStream(tempFile)) {
+    static void downloadToTarget(final URL downloadUrl, Path target) throws IOException {
+        SafeFileReplace.replace(target, temporaryFile -> {
+            URLConnection conn = downloadUrl.openConnection();
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(30000);
 
-            byte[] buf = new byte[1024];
-            int n;
-            while ((n = in.read(buf)) != -1) {
-                out.write(buf, 0, n);
+            try (InputStream in = conn.getInputStream();
+                 OutputStream out = Files.newOutputStream(temporaryFile)) {
+                byte[] buffer = new byte[8192];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, read);
+                }
             }
-            System.out.println("New version of " + localName + " downloaded. Please restart the server.");
 
-        } catch (IOException e) {
-            System.out.println("Error downloading new version of " + localName + "\n" + e);
-            tempFile.delete();
-            return;
+            validateJar(temporaryFile);
+        });
+    }
+
+    static void validateJar(Path candidate) throws IOException {
+        try (JarFile jar = new JarFile(candidate.toFile())) {
+            Enumeration<JarEntry> entries = jar.entries();
+            byte[] buffer = new byte[8192];
+            boolean containsFile = false;
+
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                if (entry.isDirectory()) {
+                    continue;
+                }
+
+                containsFile = true;
+                try (InputStream in = jar.getInputStream(entry)) {
+                    while (in.read(buffer) != -1) {
+                        // Read every entry so corrupt compressed data is rejected.
+                    }
+                }
+            }
+
+            if (!containsFile) {
+                throw new IOException("Downloaded update JAR contains no files: " + candidate.getFileName());
+            }
+        } catch (IOException invalidJar) {
+            throw new IOException("Downloaded update is not a valid JAR: " + candidate.getFileName(), invalidJar);
         }
-
-        // Atomically replace the old plugin with the newly downloaded file
-        Files.move(tempFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 
     private static String getLatestDownload(String jobPath, int build) throws IOException {
